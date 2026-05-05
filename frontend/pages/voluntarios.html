@@ -1,92 +1,96 @@
-<!DOCTYPE html> 
-<html lang="pt-br"> 
-<head>   
-  <meta charset="UTF-8">   
-  <title>Cadastrar Voluntário</title>   
-  <link rel="stylesheet" href="../css/">   
-  <link rel="stylesheet" href="../css/"> 
-</head> 
-<body> 
-<div class="topbar">    
-  <img src="../images/logo.png" class="logo-img" alt="Logo ELLP">   
-  <div class="user">João</div> 
-</div> 
-<div class="container">   
-  <h2 class="titulo">Cadastrar Voluntário</h2>   
-  <div class="card">        
-    <div class="campo full">       
-      <label>Nome do voluntário</label>       
-      <input id="nome" placeholder="João da Silva">     
-    </div>         
-    <div class="campo full">       
-      <label>Data de nascimento</label>       
-      <input id="data_nascimento" type="date">     
-    </div>        
-    <div class="campo full">       
-      <label>CPF</label>       
-      <input id="cpf" placeholder="123456789">     
-    </div>       
-    <div class="campo full">       
-      <label>Nacionalidade</label>       
-      <input id="nacionalidade" placeholder="Brasileiro">     
-    </div>         
-    <div class="campo full">       
-      <label>Estudante da UTFPR</label>       
-      <div class="radio-group">         
-        <label><input type="radio" name="estudante" value="sim"> Sim</label>         
-        <label><input type="radio" name="estudante" value="nao"> Não</label>       
-      </div>     
-    </div>         
-    <div class="grid-3">       
-      <div class="campo">         
-        <label>Curso</label>         
-        <input id="curso" placeholder="Engenharia de Software">       
-      </div>       
-      <div class="campo">         
-        <label>Período</label>         
-        <input id="periodo" placeholder="5">       
-      </div>       
-      <div class="campo">         
-        <label>RA</label>         
-        <input id="ra" placeholder="123456">       
-      </div>     
-    </div>        
-    <div class="campo full">       
-      <label>Endereço</label>       
-      <input id="endereco" placeholder="Avenida Brasil, 123">     
-    </div>       
-    <div class="grid-2">       
-      <div class="campo">         
-        <label>Cidade</label>         
-        <input id="cidade" placeholder="Cornélio Procópio">       
-      </div>       
-      <div class="campo">         
-        <label>Estado</label>         
-        <input id="estado" placeholder="Paraná">       
-      </div>     
-    </div>       
-    <div class="grid-2">       
-      <div class="campo">         
-        <label>E-mail</label>         
-        <input id="email" placeholder="email@utfpr.edu.br">       
-      </div>       
-      <div class="campo">         
-        <label>Telefone</label>         
-        <input id="telefone" placeholder="43999999999">       
-      </div>     
-    </div>     
-    <div class="campo full">       
-      <label>Cronograma</label>       
-      <select id="cronograma">         
-        <option value="">Selecione</option>       
-      </select>     
-    </div>      
-    <div class="form-buttons">       
-      <button class="btn-salvar" onclick="cadastrar()">Cadastrar</button>       
-      <button class="btn-cancelar" onclick="voltar()">Cancelar</button>     
-    </div>   
-  </div> 
-</div> 
-<script src="../js/voluntarios.js"></script> 
-</body> 
+<!doctype html>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Cadastrar Voluntário</title>
+		<link rel="stylesheet" href="../css/style.css" />
+		<link rel="stylesheet" href="../css/voluntario.css" />
+	</head>
+	<body>
+		<div class="topbar">
+			<img src="../images/logo.png" class="logo-img" alt="Logo ELLP" />
+			<div class="user">João</div>
+		</div>
+		<div class="container">
+			<h2 class="titulo">Cadastrar Voluntário</h2>
+			<div class="card">
+				<div class="campo full">
+					<label>Nome do voluntário</label>
+					<input id="nome" placeholder="João da Silva" />
+				</div>
+				<div class="campo full">
+					<label>Data de nascimento</label>
+					<input id="data_nascimento" type="date" />
+				</div>
+				<div class="campo full">
+					<label>CPF</label>
+					<input id="cpf" placeholder="123456789" />
+				</div>
+				<div class="campo full">
+					<label>Nacionalidade</label>
+					<input id="nacionalidade" placeholder="Brasileiro" />
+				</div>
+				<div class="campo full">
+					<label>Estudante da UTFPR</label>
+					<div class="radio-group">
+						<label
+							><input type="radio" name="estudante" value="sim" /> Sim</label
+						>
+						<label
+							><input type="radio" name="estudante" value="nao" /> Não</label
+						>
+					</div>
+				</div>
+				<div class="grid-3">
+					<div class="campo">
+						<label>Curso</label>
+						<input id="curso" placeholder="Engenharia de Software" />
+					</div>
+					<div class="campo">
+						<label>Período</label>
+						<input id="periodo" placeholder="5" />
+					</div>
+					<div class="campo">
+						<label>RA</label>
+						<input id="ra" placeholder="123456" />
+					</div>
+				</div>
+				<div class="campo full">
+					<label>Endereço</label>
+					<input id="endereco" placeholder="Avenida Brasil, 123" />
+				</div>
+				<div class="grid-2">
+					<div class="campo">
+						<label>Cidade</label>
+						<input id="cidade" placeholder="Cornélio Procópio" />
+					</div>
+					<div class="campo">
+						<label>Estado</label>
+						<input id="estado" placeholder="Paraná" />
+					</div>
+				</div>
+				<div class="grid-2">
+					<div class="campo">
+						<label>E-mail</label>
+						<input id="email" placeholder="email@utfpr.edu.br" />
+					</div>
+					<div class="campo">
+						<label>Telefone</label>
+						<input id="telefone" placeholder="43999999999" />
+					</div>
+				</div>
+				<div class="campo full">
+					<label>Cronograma</label>
+					<select id="cronograma">
+						<option value="">Selecione</option>
+					</select>
+				</div>
+				<div class="form-buttons">
+					<button class="btn-salvar" onclick="cadastrar()">Cadastrar</button>
+					<button class="btn-cancelar" onclick="voltar()">Cancelar</button>
+				</div>
+			</div>
+		</div>
+		<script src="../js/voluntarios.js"></script>
+	</body>
 </html>
