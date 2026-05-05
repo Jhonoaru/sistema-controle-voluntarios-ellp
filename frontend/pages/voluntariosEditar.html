@@ -1,0 +1,104 @@
+<!DOCTYPE html> 
+<html lang="pt-br"> 
+<head>   
+  <meta charset="UTF-8">   
+  <title>Editar Voluntário</title>   
+  <link rel="stylesheet" href="../css/">   
+  <link rel="stylesheet" href="../css/"> 
+</head> 
+<body> 
+<div class="topbar">   
+  <img src="../images/logo.png" class="logo-img" alt="Logo ELLP">   
+  <div class="user">João</div> 
+</div> 
+<div class="container">   
+  <h2 class="titulo">Editar Voluntário</h2>   
+  <div class="card">       
+    <div class="campo full">       
+      <label>Nome do voluntário</label>       
+      <input id="nome">     
+    </div>       
+    <div class="campo full">       
+      <label>Data de nascimento</label>       
+      <input id="data_nascimento" type="date">     
+    </div>       
+    <div class="campo full">       
+      <label>CPF</label>       
+      <input id="cpf">     
+    </div>        
+    <div class="campo full">       
+      <label>Nacionalidade</label>       
+      <input id="nacionalidade">     
+    </div>      
+    <div class="campo full">       
+      <label>Status</label>       
+      <div class="radio-group">         
+        <label><input type="radio" name="ativo" value="true"> Ativo</label>         
+        <label><input type="radio" name="ativo" value="false"> Inativo</label>       
+      </div>     
+    </div>       
+    <div class="campo full">       
+      <label>Estudante da UTFPR</label>       
+      <div class="radio-group">         
+        <label><input type="radio" name="estudante" value="sim"> Sim</label>         
+        <label><input type="radio" name="estudante" value="nao"> Não</label>       
+      </div>     
+    </div>        
+    <div class="grid-3">       
+      <div class="campo">         
+        <label>Curso</label>         
+        <input id="curso">       
+      </div>       
+      <div class="campo">         
+        <label>Período</label>         
+        <input id="periodo">       
+      </div>       
+      <div class="campo">         
+        <label>RA</label>         
+        <input id="ra">       
+      </div>     
+    </div>      
+    <div class="campo full">       
+      <label>Endereço</label>       
+      <input id="endereco">     
+    </div>       
+    <div class="grid-2">       
+      <div class="campo">         
+        <label>Cidade</label>         
+        <input id="cidade">       
+      </div>       
+      <div class="campo">         
+        <label>Estado</label>         
+        <input id="estado">       
+      </div>     
+    </div>     
+    <div class="grid-2">       
+      <div class="campo">         
+        <label>E-mail</label>         
+        <input id="email">       
+      </div>       
+      <div class="campo">         
+        <label>Telefone</label>         
+        <input id="telefone">       
+      </div>     
+    </div>     
+    <div class="campo full">       
+      <label>Cronograma</label>       
+      <select id="cronograma">         
+        <option value="">Selecione</option>       
+      </select>     
+    </div>     
+    <div class="form-buttons">     
+      <div class="left-buttons">       
+        <button class="btn-salvar" onclick="salvar()">Salvar</button>       
+        <button class="btn-cancelar" onclick="voltar()">Cancelar</button>     
+      </div>     
+      <div class="right-buttons">       
+        <button class="btn-delete" onclick="excluir()">Excluir</button>     
+      </div>   
+    </div>   
+  </div> 
+</div> 
+<script src="../js/voluntariosEditar.js"></script> 
+</body> 
+</html>

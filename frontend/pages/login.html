@@ -1,0 +1,38 @@
+<!DOCTYPE html> 
+<html lang="pt-br"> 
+<head>   
+  <meta charset="UTF-8">   
+  <title>Login ELLP</title>   
+  <link rel="stylesheet" href="../css/"> 
+</head> 
+<body> 
+<div class="container">   
+  <div class="left">        
+    <img src="../images/logo.png" alt="Logo ELLP" class="logo">     
+    <h2>Entre na sua conta</h2>     
+    <p>Digite seu email e senha para entrar.</p>     
+    <div class="form">       
+      <input type="text" id="email" placeholder="Digite seu email">       
+      <div class="password-box">         
+        <input type="password" id="senha" placeholder="Digite sua senha">       
+      </div>       
+      <div class="options">       
+        <label>         
+          <input type="checkbox"> Manter conectado       
+        </label>         
+        <a href="#">Esqueceu a senha?</a>       
+      </div>       
+      <button onclick="login()">Log In</button>       
+      <p class="cadastro">         
+        Não tem uma conta? <a href="#">Cadastre-se</a>       
+      </p>       
+      <p id="erro"></p>     
+    </div>   
+  </div>   
+  <div class="right">     
+    <img src="../images/robo.png" alt="Imagem Robô">   
+  </div> 
+</div> 
+<script src="../js/login.js"></script> 
+</body> 
+</html>
