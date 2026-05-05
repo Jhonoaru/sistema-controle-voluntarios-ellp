@@ -1,0 +1,145 @@
+/* ================= BASE ================= */
+
+.container {
+	max-width: 900px;
+	margin: 30px auto;
+}
+
+.titulo {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+/* ================= TOPO (LOGO) ================= */
+
+.logo-img {
+	height: 55px;
+}
+
+/* ================= CARD ================= */
+
+.card {
+	background: white;
+	padding: 25px;
+	border-radius: 12px;
+	box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ================= CAMPOS ================= */
+
+.campo {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 15px;
+}
+
+.campo label {
+	font-size: 13px;
+	margin-bottom: 5px;
+	color: #555;
+}
+
+.campo input,
+.campo select {
+	padding: 10px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	font-size: 14px;
+}
+
+/* CAMPO FULL */
+.full {
+	width: 100%;
+}
+
+/* ================= GRID ================= */
+
+.grid-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.grid-3 {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 10px;
+}
+
+/* ================= RADIO ================= */
+
+.radio-group {
+	display: flex;
+	gap: 20px;
+	margin-top: 5px;
+}
+
+.radio-group label {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 14px;
+}
+
+/* ================= BOTÕES ================= */
+
+.form-buttons {
+	margin-top: 25px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* ESQUERDA */
+.left-buttons {
+	display: flex;
+	gap: 10px;
+}
+
+/* DIREITA */
+.right-buttons {
+	display: flex;
+}
+
+/* BOTÃO PADRÃO */
+.btn-salvar {
+	background: #1abc9c;
+	color: white;
+}
+
+.btn-salvar:hover {
+	background: #16a085;
+}
+
+.btn-cancelar {
+	background: #bdc3c7;
+	color: white;
+}
+
+.btn-cancelar:hover {
+	background: #95a5a6;
+}
+
+/* EXCLUIR */
+.btn-delete {
+	background: #e74c3c;
+	color: white;
+	padding: 10px 16px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.btn-delete:hover {
+	background: #c0392b;
+}
+
+/* ================= INPUT FOCUS ================= */
+
+input:focus,
+select:focus {
+	outline: none;
+	border-color: #1abc9c;
+	box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+}
