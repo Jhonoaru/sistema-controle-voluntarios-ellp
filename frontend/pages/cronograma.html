@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Cronograma</title>
+		<link rel="stylesheet" href="../css/style.css" />
+		<link rel="stylesheet" href="../css/cronograma.css" />
+	</head>
+	<body>
+		<div class="topbar">
+			<img src="../images/logo.png" class="logo-img" alt="Logo ELLP" />
+			<div class="user">Name</div>
+		</div>
+		<div class="container">
+			<h2 class="titulo">Cronograma</h2>
+			<div class="card">
+				<div class="campo">
+					<label>Nome do Cronograma</label>
+					<input type="text" id="nome" placeholder="Ex: Projeto Social 2026" />
+				</div>
+				<div class="campo">
+					<label>Síntese das atividades</label>
+					<textarea
+						id="descricao"
+						placeholder="Descreva as atividades"></textarea>
+				</div>
+				<div class="form-grid">
+					<div class="campo">
+						<label>Data de Início</label>
+						<input type="date" id="data_inicio" />
+					</div>
+					<div class="campo">
+						<label>Data de Fim</label>
+						<input type="date" id="data_fim" />
+					</div>
+				</div>
+				<div class="campo">
+					<label>Meses</label>
+					<div class="meses-grid">
+						<label><input type="checkbox" value="Jan" /> Jan</label>
+						<label><input type="checkbox" value="Fev" /> Fev</label>
+						<label><input type="checkbox" value="Mar" /> Mar</label>
+						<label><input type="checkbox" value="Abr" /> Abr</label>
+						<label><input type="checkbox" value="Mai" /> Mai</label>
+						<label><input type="checkbox" value="Jun" /> Jun</label>
+						<label><input type="checkbox" value="Jul" /> Jul</label>
+						<label><input type="checkbox" value="Ago" /> Ago</label>
+						<label><input type="checkbox" value="Set" /> Set</label>
+						<label><input type="checkbox" value="Out" /> Out</label>
+						<label><input type="checkbox" value="Nov" /> Nov</label>
+						<label><input type="checkbox" value="Dez" /> Dez</label>
+					</div>
+				</div>
+				<div class="form-buttons">
+					<button class="btn-cancelar" onclick="voltar()">Cancelar</button>
+					<button onclick="salvar()">Salvar</button>
+				</div>
+			</div>
+			<h3 style="margin-top: 30px">Cronogramas Criados</h3>
+			<div id="lista-cronogramas"></div>
+		</div>
+		<script src="../js/cronograma.js"></script>
+	</body>
+</html>

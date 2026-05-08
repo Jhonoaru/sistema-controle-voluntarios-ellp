@@ -1,0 +1,151 @@
+/* RESET */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: Arial, sans-serif;
+}
+
+body {
+	height: 100vh;
+	background: #f4f6f9;
+}
+
+/* CONTAINER */
+.container {
+	display: flex;
+	height: 100vh;
+}
+
+/* ================= LEFT ================= */
+
+.left {
+	width: 40%;
+	background: white;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	padding: 40px;
+	text-align: center;
+}
+
+.logo {
+	width: 240px;
+	margin-bottom: 25px;
+}
+
+/* TÍTULO */
+.left h2 {
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+
+/* TEXTO */
+.left p {
+	color: #666;
+	margin-bottom: 20px;
+}
+
+.form {
+	width: 100%;
+	max-width: 420px;
+
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	padding: 30px;
+	background: #ffffff;
+}
+
+/* INPUT */
+.form input {
+	width: 100%;
+	padding: 12px;
+	margin-bottom: 15px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+}
+
+/* ================= OPTIONS ================= */
+
+.options {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+	font-size: 13px;
+
+	flex-wrap: nowrap;
+}
+
+.options label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	white-space: nowrap;
+}
+
+.options input[type="checkbox"] {
+	margin: 0;
+}
+
+/* LINK */
+.options a {
+	text-decoration: none;
+	color: #3b82f6;
+	white-space: nowrap;
+}
+
+/* ================= BOTÃO ================= */
+
+.form button {
+	width: 100%;
+	padding: 12px;
+	background: #3b82f6;
+	border: none;
+	color: white;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.form button:hover {
+	background: #2563eb;
+}
+
+/* CADASTRO */
+.cadastro {
+	margin-top: 15px;
+	font-size: 13px;
+}
+
+.cadastro a {
+	color: #3b82f6;
+	text-decoration: none;
+}
+
+/* ERRO */
+#erro {
+	margin-top: 10px;
+	color: red;
+	font-size: 13px;
+}
+
+/* ================= RIGHT ================= */
+
+.right {
+	width: 60%;
+	background: #3b82f6;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* IMAGEM ROBÔ */
+.right img {
+	width: 85%;
+	max-width: 650px;
+}

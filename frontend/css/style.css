@@ -1,0 +1,50 @@
+/* RESET GLOBAL */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: Arial, sans-serif;
+}
+
+body {
+	background: #f4f6f9;
+}
+
+/* TOPO GLOBAL */
+.topbar {
+	height: 60px;
+	background: #c9d6e4;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 20px;
+}
+
+.logo {
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.user {
+	font-size: 14px;
+}
+
+/* CONTAINER PADRÃO */
+.container {
+	max-width: 900px;
+	margin: 30px auto;
+}
+
+/* BOTÕES PADRÃO */
+button {
+	padding: 10px 15px;
+	background: #1abc9c;
+	border: none;
+	color: white;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+button:hover {
+	background: #16a085;
+}
