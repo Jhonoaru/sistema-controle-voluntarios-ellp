@@ -27,27 +27,6 @@ Ferramentas
 
 ------------------------------------------------------------
 
-ESTRUTURA DO PROJETO
-
-project/
-│
-├── backend/
-│   ├── src/
-│   │   ├── routes/
-│   │   ├── db.js
-│   │   └── app.js
-│   ├── .env
-│   └── package.json
-│
-├── pages/
-├── css/
-├── js/
-├── images/
-│
-└── script.sql
-
-------------------------------------------------------------
-
 COMO RODAR O PROJETO
 
 1. Clonar repositório
