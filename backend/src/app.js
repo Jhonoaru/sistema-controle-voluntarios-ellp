@@ -30,6 +30,9 @@ app.use('/sinteses', sinteseRoutes);
 const cronogramaRoutes = require('./routes/cronogramaRoutes');
 app.use('/cronogramas', cronogramaRoutes);
 
+const gerarTermo = require('./routes/gerarTermo');
+app.use('/api', gerarTermo);
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
