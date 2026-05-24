@@ -1,13 +1,21 @@
+if (!localStorage.getItem('logado')) {
+  window.location.href = 'login.html';
+}
+
 let voluntarios = [];
 let filtroAtual = 'ativo';
+
+const nome = localStorage.getItem('usuarioNome');
+
+if (nome) {
+  document.querySelector('.user').innerText = nome;
+}
 
 async function carregarVoluntarios() {
   try {
     const res = await fetch('http://localhost:3001/voluntarios');
     voluntarios = await res.json();
-
     renderizar();
-
   } catch (error) {
     console.error('Erro ao carregar voluntários:', error);
   }
@@ -66,9 +74,7 @@ function filtrarStatus(tipo, elemento) {
     btn.classList.remove('selected');
   });
 
-  if (elemento) {
-    elemento.classList.add('selected');
-  }
+  elemento.classList.add('selected');
 
   renderizar();
 }
@@ -81,8 +87,17 @@ function irCronograma() {
   window.location.href = 'cronograma.html';
 }
 
+function irCoordenador() {
+  window.location.href = 'coordenador.html';
+}
+
 function editar(id) {
   window.location.href = `voluntariosEditar.html?id=${id}`;
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'login.html';
 }
 
 window.onload = () => {
