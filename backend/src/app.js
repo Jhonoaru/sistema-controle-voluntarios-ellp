@@ -35,6 +35,8 @@ app.use('/coordenadores', coordenadorRoutes);
 
 const gerarTermoRoutes = require('./routes/gerarTermo');
 app.use('/api', gerarTermoRoutes);
+const gerarTermo = require('./routes/gerarTermo');
+app.use('/api', gerarTermo);
 
 const PORT = process.env.PORT || 3001;
 
