@@ -58,7 +58,7 @@ function renderizar() {
         </div>
 
         <div class="actions">
-          <button disabled>TERMO</button>
+          <button class="btn-termo" onclick="baixarTermo(${v.id})">TERMO</button>
           <button onclick="editar(${v.id})">EDITAR</button>
         </div>
       `;
@@ -93,6 +93,15 @@ function irCoordenador() {
 
 function editar(id) {
   window.location.href = `voluntariosEditar.html?id=${id}`;
+}
+
+function baixarTermo(id) {
+  const link = document.createElement('a');
+  link.href = `http://localhost:3001/api/termo/${id}`;
+  link.download = '';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 function logout() {
