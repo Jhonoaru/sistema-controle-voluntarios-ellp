@@ -1,363 +1,411 @@
-// gerarTermo.js — Rota para gerar o Termo de Adesão para Voluntário(a)
-//
-// Uso: GET /api/termo/:id
-//
-// Dependência: npm install pdfkit
-// O objeto `db` abaixo deve ser substituído pela sua conexão real com o banco.
-
 const express = require('express');
-const router = express.Router();
 const PDFDocument = require('pdfkit');
+const pool = require('../db');
 
-//  Substitua esta função pela query real no banco
-async function buscarVoluntario(id) {
-  // Exemplo de retorno esperado do banco:
-  // return db.query('SELECT * FROM voluntarios WHERE id = ?', [id]);
-  //
-  // Estrutura esperada:
-  return {
-    nome: 'Maria da Silva',
-    data_nascimento: '15/03/2000',
-    cpf: '123.456.789-00',
-    nacionalidade: 'Brasileira',
-    estudante_utfpr: true,
-    curso: 'Engenharia de Computação',
-    periodo: '4º',
-    ra: '2021001234',
-    endereco: 'Rua das Flores, 123',
-    cidade: 'Cornélio Procópio',
-    estado: 'PR',
-    telefone: '(43) 99999-0000',
-    email: 'maria@alunos.utfpr.edu.br',
-    atividades: [
-      'Ministrar aulas de Matemática para turmas do ENEM',
-      'Elaborar listas de exercícios e materiais de apoio',
-      'Participar das reuniões mensais de coordenação',
-      'Realizar atendimento individualizado a alunos com dificuldades',
-    ],
-    periodo_inicio: 'Janeiro/2025',
-    periodo_fim: 'Dezembro/2025',
-  };
-}
+const router = express.Router();
 
 router.get('/termo/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    const v = await buscarVoluntario(id);
+    const voluntario = await buscarVoluntario(req.params.id);
 
-    if (!v) {
-      return res.status(404).json({ erro: 'Voluntário não encontrado.' });
+    if (!voluntario) {
+      return res.status(404).json({ error: 'Voluntario nao encontrado' });
     }
 
-    // Configura o PDF
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const nomeArquivo = criarNomeArquivo(voluntario.nome, voluntario.id);
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="termo_voluntario_${id}.pdf"`
-    );
+    res.setHeader('Content-Disposition', `attachment; filename="${nomeArquivo}"`);
+
     doc.pipe(res);
-
-    const largura = doc.page.width - 100; // largura útil (margens de 50px cada lado)
-    const cinza = '#555555';
-    const preto = '#000000';
-
-    // Cabeçalho 
-    doc
-      .fontSize(10)
-      .font('Helvetica-Bold')
-      .text('Ministério da Educação', { align: 'center' })
-      .text('Universidade Tecnológica Federal do Paraná', { align: 'center' })
-      .text('Diretoria de Relações Empresariais e Comunitárias', { align: 'center' })
-      .text('Departamento de Extensão', { align: 'center' });
-
-    doc.moveDown(0.5);
-    doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke();
-    doc.moveDown(0.5);
-
-    // Título
-    doc
-      .fontSize(12)
-      .font('Helvetica-Bold')
-      .text('TERMO DE ADESÃO PARA VOLUNTÁRIO(A)', { align: 'center' });
-
-    doc.moveDown(0.8);
-
-    // Seção: Dados da Instituição 
-    secao(doc, 'Dados da Instituição');
-    caixaTexto(doc, 'Instituição: Universidade Tecnológica Federal do Paraná – UTFPR');
-    caixaTexto(doc, 'Câmpus: Cornélio Procópio.');
-
-    doc.moveDown(0.5);
-
-    // Seção: Dados da Ação 
-    secao(doc, 'Dados da ação');
-    caixaTexto(
-      doc,
-      'Título da ação: Curso Comunitário Prisma – Preparatório para o ENEM e Pré-vestibular'
-    );
-    caixaTexto(doc, 'Modalidade:  ( ) programa   (X) projeto   ( ) evento   ( ) curso');
-    linha2colunas(doc, `Vigência  Início: ${v.periodo_inicio}.`, `Término: ${v.periodo_fim}.`);
-
-    doc.moveDown(0.5);
-
-    // Seção: Dados da Coordenação
-    secao(doc, 'Dados da coordenação da ação');
-    caixaTexto(doc, 'Nome: Alessandro Otávio Marcello.');
-    linha2colunas(doc, 'CPF: 029.273.799-80', 'Departamento: DIRGRAD-CP');
-    linha2colunas(doc, 'Fone: (43) 3520-4030', 'E-mail: marcello@utfpr.edu.br');
-
-    doc.moveDown(0.5);
-
-    // Seção: Dados do Voluntário
-    secao(doc, 'Dados do(a) Voluntário(a)');
-    linha2colunas(doc, `Nome: ${v.nome}`, `Data nascimento: ${v.data_nascimento}`);
-    linha2colunas(doc, `CPF: ${v.cpf}`, `Nacionalidade: ${v.nacionalidade}`);
-    caixaTexto(
-      doc,
-      `É estudante da UTFPR: ${v.estudante_utfpr ? '(X) sim   ( ) não' : '( ) sim   (X) não'}`
-    );
-    linha3colunas(doc, `Curso: ${v.curso}`, `Período: ${v.periodo}`, `RA: ${v.ra}`);
-    caixaTexto(doc, `Endereço: ${v.endereco}`);
-    linha2colunas(doc, `Cidade: ${v.cidade}`, `Estado: ${v.estado}`);
-    linha2colunas(doc, `Fones: ${v.telefone}`, `E-mail: ${v.email}`);
-
-    doc.moveDown(0.5);
-
-    // Seção: Síntese das Atividades
-    secao(doc, 'Síntese das atividades a serem desenvolvidas pelo(a) voluntário(a)');
-
-    const atividades = v.atividades || [];
-    const totalLinhas = Math.max(atividades.length, 5);
-    for (let i = 0; i < totalLinhas; i++) {
-      const txt = atividades[i] ? `${i + 1}  ${atividades[i]}` : `${i + 1}`;
-      caixaTexto(doc, txt, 16);
-    }
-
-    doc.moveDown(0.5);
-
-    // Seção: Cronograma
-    secao(doc, 'Cronograma das atividades a serem desenvolvidas pelo(a) voluntário(a)');
-    cronograma(doc, atividades);
-
-    // Página 2: Condições Gerais
-    doc.addPage();
-
-    doc
-      .fontSize(9)
-      .font('Helvetica-Bold')
-      .text('COMISSÃO PRESIDIDA PELA PROFESSORA LAÍZE PORTO ALEGRE - DIREXT', {
-        align: 'center',
-      });
-    doc.moveDown(0.5);
-
-    secao(doc, 'Condições Gerais');
-    doc.fontSize(9).font('Helvetica');
-
-    const condicoes = [
-      {
-        num: '1.',
-        texto: 'O(a) voluntário(a) compromete-se a:',
-        itens: [
-          'a) Dedicar-se às atividades acadêmicas e ações de extensão em ritmo compatível com as atividades exigidas pelo curso durante o ano letivo.',
-          'b) Realizar suas atividades nos dias e horários previstos, podendo modificá-los, em comum acordo com a Coordenação da ação de Extensão.',
-          'c) Ser assíduo, pontual e agir de forma ética nas ações extensionistas.',
-          'd) Observar as determinações da coordenação alusivas ao bom desenvolvimento das ações de extensão.',
-          'e) Solicitar por escrito, com anuência da Coordenação da ação de Extensão, junto à Diretoria de Relações Empresariais e Comunitárias – DIREC, ou órgão equivalente de seu Campus, permissão para afastamentos superiores a 15 dias consecutivos.',
-          'f) Apresentar relatório parcial e final do trabalho desenvolvido à Coordenação da ação de Extensão.',
-          'g) Participar das reuniões mensais para apresentar os resultados obtidos, receber orientação e alinhar suas atividades com as demais correntes.',
-          'h) Qualquer ausência sem aviso prévio e não aprovada pela respectiva Coordenação resultará no desconto proporcional de pontos de atividade complementar, exceto reuniões onde serão descontados dois pontos fixos por falta.',
-        ],
-      },
-      {
-        num: '2.',
-        texto:
-          'Os trabalhos publicados em decorrência das ações de extensão apoiadas pela UTFPR deverão, necessariamente, fazer referência ao apoio recebido, com a seguinte expressão: "O presente trabalho foi realizado com o apoio da Universidade Tecnológica Federal do Paraná - UTFPR".',
-      },
-      {
-        num: '3.',
-        texto:
-          'O(a) Voluntário(a) declara ser conhecedor da Lei Federal N. 9.608, de 18 de fevereiro de 1998, especialmente de que o serviço voluntário "não gera vínculo empregatício, nem obrigação de natureza trabalhista, previdenciária ou afim".',
-      },
-      {
-        num: '4.',
-        texto:
-          'O(a) Voluntário(a), estudante da UTFPR, contará com o seguro contra acidentes pessoais pago pela UTFPR, conforme dispositivo legal pertinente.',
-      },
-      {
-        num: '5.',
-        texto:
-          'A UTFPR não se responsabiliza por qualquer dano físico ou mental causado ao(à) estudante voluntário(a) na execução da ação de extensão.',
-      },
-      {
-        num: '6.',
-        texto:
-          'À coordenação da ação de extensão cabe supervisionar as atividades desenvolvidas pelo(a) voluntário(a), nos dias e horários previstos, e informar à DIREC sobre o cancelamento deste Termo, quando ocorrer, em até 03 dias.',
-      },
-      {
-        num: '7.',
-        texto:
-          'A UTFPR poderá cancelar ou suspender o vínculo com a atividade quando constatado que foram infringidas quaisquer das condições constantes deste termo e das normas aplicáveis ao Edital respectivo, sem prejuízo da aplicação dos dispositivos legais que disciplinam o ressarcimento dos recursos.',
-      },
-      {
-        num: '8.',
-        texto:
-          'O(a) voluntário(a) e a coordenação da ação de Extensão comprometem-se a cumprir as condições expressas neste instrumento e as normas que lhe são aplicáveis.',
-      },
-    ];
-
-    for (const c of condicoes) {
-      doc.font('Helvetica-Bold').text(`${c.num}  `, { continued: true });
-      doc.font('Helvetica').text(c.texto);
-      if (c.itens) {
-        for (const item of c.itens) {
-          doc.text(item, { indent: 20 });
-        }
-      }
-      doc.moveDown(0.3);
-    }
-
-    // Assinaturas
-    doc.moveDown(1);
-    doc
-      .fontSize(9)
-      .font('Helvetica')
-      .text('Local: _________________________     Data: ____/____/________');
-
-    doc.moveDown(1);
-    doc.font('Helvetica-Bold').fontSize(10).text('ACEITE E CONCORDÂNCIA', { align: 'center' });
-    doc
-      .font('Helvetica')
-      .fontSize(9)
-      .text(
-        '(Este documento deverá ser assinado pelo voluntário(a), pela coordenação da ação e pela Diretoria de Relações Empresariais e Comunitárias, sendo uma cópia arquivada na DIREC).',
-        { align: 'center' }
-      );
-
-    doc.moveDown(2);
-    assinatura(doc, 'Voluntário(a)');
-    doc.moveDown(2);
-    assinatura(doc, 'Coordenação da ação');
-    doc.moveDown(2);
-    assinatura(doc, 'Professor Orientador');
-    doc.moveDown(2);
-    assinatura(doc, 'DIREC');
-
+    gerarPdfTermo(doc, voluntario);
     doc.end();
-  } catch (err) {
-    console.error('Erro ao gerar PDF:', err);
-    res.status(500).json({ erro: 'Erro interno ao gerar o termo.' });
+  } catch (error) {
+    console.error('Erro ao gerar termo:', error);
+    res.status(500).json({ error: 'Erro ao gerar termo em PDF' });
   }
 });
 
-// Funções auxiliares
+async function buscarVoluntario(id) {
+  const result = await pool.query(
+    `
+      SELECT
+        v.*,
+        s.descricao AS sintese,
+        c.nome AS cronograma_nome,
+        c.descricao AS cronograma_descricao,
+        c.data_inicio,
+        c.data_fim,
+        c.meses
+      FROM voluntario v
+      LEFT JOIN sintese s ON v.sintese_id = s.id
+      LEFT JOIN cronograma c ON v.cronograma_id = c.id
+      WHERE v.id = $1
+    `,
+    [id]
+  );
 
-function secao(doc, titulo) {
+  return result.rows[0] || null;
+}
+
+function gerarPdfTermo(doc, voluntario) {
+  const atividades = montarAtividades(voluntario);
+  const meses = montarMeses(voluntario.meses);
+
   doc
-    .moveDown(0.3)
     .fontSize(10)
     .font('Helvetica-Bold')
-    .text(titulo)
-    .moveDown(0.2);
+    .text('Ministerio da Educacao', { align: 'center' })
+    .text('Universidade Tecnologica Federal do Parana', { align: 'center' })
+    .text('Diretoria de Relacoes Empresariais e Comunitarias', { align: 'center' })
+    .text('Departamento de Extensao', { align: 'center' });
+
+  doc.moveDown(0.5);
+  doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+  doc.moveDown(0.5);
+
+  doc
+    .fontSize(12)
+    .font('Helvetica-Bold')
+    .text('TERMO DE ADESAO PARA VOLUNTARIO(A)', { align: 'center' });
+
+  doc.moveDown(0.8);
+
+  secao(doc, 'Dados da Instituicao');
+  caixaTexto(doc, 'Instituicao: Universidade Tecnologica Federal do Parana - UTFPR');
+  caixaTexto(doc, 'Campus: Cornelio Procopio.');
+  doc.moveDown(0.5);
+
+  secao(doc, 'Dados da acao');
+  caixaTexto(
+    doc,
+    'Titulo da acao: Curso Comunitario Prisma - Preparatorio para o ENEM e Pre-vestibular'
+  );
+  caixaTexto(doc, 'Modalidade: ( ) programa   (X) projeto   ( ) evento   ( ) curso');
+  linha2colunas(
+    doc,
+    `Vigencia inicio: ${formatarData(voluntario.data_inicio)}`,
+    `Termino: ${formatarData(voluntario.data_fim)}`
+  );
+  if (voluntario.cronograma_nome || voluntario.cronograma_descricao) {
+    caixaTexto(
+      doc,
+      `Cronograma: ${valor(voluntario.cronograma_nome || voluntario.cronograma_descricao)}`
+    );
+  }
+  doc.moveDown(0.5);
+
+  secao(doc, 'Dados da coordenacao da acao');
+  caixaTexto(doc, 'Nome: Alessandro Otavio Marcello.');
+  linha2colunas(doc, 'CPF: 029.273.799-80', 'Departamento: DIRGRAD-CP');
+  linha2colunas(doc, 'Fone: (43) 3520-4030', 'E-mail: marcello@utfpr.edu.br');
+  doc.moveDown(0.5);
+
+  secao(doc, 'Dados do(a) Voluntario(a)');
+  linha2colunas(
+    doc,
+    `Nome: ${valor(voluntario.nome)}`,
+    `Data nascimento: ${formatarData(voluntario.data_nascimento)}`
+  );
+  linha2colunas(
+    doc,
+    `CPF: ${valor(voluntario.cpf)}`,
+    `Nacionalidade: ${valor(voluntario.nacionalidade)}`
+  );
+  caixaTexto(doc, `Estudante da UTFPR: ${marcarSimNao(voluntario.estudante)}`);
+  linha3colunas(
+    doc,
+    `Curso: ${valor(voluntario.curso)}`,
+    `Periodo: ${valor(voluntario.periodo)}`,
+    `RA: ${valor(voluntario.ra)}`
+  );
+  caixaTexto(doc, `Endereco: ${valor(voluntario.endereco)}`);
+  linha2colunas(
+    doc,
+    `Cidade: ${valor(voluntario.cidade)}`,
+    `Estado: ${valor(voluntario.estado)}`
+  );
+  linha2colunas(
+    doc,
+    `Fones: ${valor(voluntario.telefone)}`,
+    `E-mail: ${valor(voluntario.email)}`
+  );
+  doc.moveDown(0.5);
+
+  secao(doc, 'Sintese das atividades a serem desenvolvidas pelo(a) voluntario(a)');
+  const totalLinhas = Math.max(atividades.length, 5);
+  for (let i = 0; i < totalLinhas; i += 1) {
+    caixaTexto(doc, atividades[i] ? `${i + 1}. ${atividades[i]}` : `${i + 1}.`, 18);
+  }
+
+  doc.moveDown(0.5);
+  secaoComEspaco(
+    doc,
+    'Cronograma das atividades a serem desenvolvidas pelo(a) voluntario(a)',
+    alturaCronograma(atividades)
+  );
+  cronograma(doc, atividades, meses);
+
+  doc.addPage();
+  doc
+    .fontSize(9)
+    .font('Helvetica-Bold')
+    .text('COMISSAO PRESIDIDA PELA PROFESSORA LAIZE PORTO ALEGRE - DIREXT', {
+      align: 'center'
+    });
+
+  doc.moveDown(0.5);
+  secao(doc, 'Condicoes Gerais');
+  doc.fontSize(9).font('Helvetica');
+
+  const condicoes = [
+    {
+      num: '1.',
+      texto: 'O(a) voluntario(a) compromete-se a:',
+      itens: [
+        'a) Dedicar-se as atividades academicas e acoes de extensao em ritmo compativel com as atividades exigidas pelo curso durante o ano letivo.',
+        'b) Realizar suas atividades nos dias e horarios previstos, podendo modifica-los em comum acordo com a Coordenacao da acao de Extensao.',
+        'c) Ser assiduo, pontual e agir de forma etica nas acoes extensionistas.',
+        'd) Observar as determinacoes da coordenacao alusivas ao bom desenvolvimento das acoes de extensao.',
+        'e) Solicitar por escrito, com anuencia da Coordenacao da acao de Extensao, permissao para afastamentos superiores a 15 dias consecutivos.',
+        'f) Apresentar relatorio parcial e final do trabalho desenvolvido a Coordenacao da acao de Extensao.'
+      ]
+    },
+    {
+      num: '2.',
+      texto: 'Os trabalhos publicados em decorrencia das acoes de extensao apoiadas pela UTFPR deverao fazer referencia ao apoio recebido.'
+    },
+    {
+      num: '3.',
+      texto: 'O(a) Voluntario(a) declara ser conhecedor da Lei Federal N. 9.608, de 18 de fevereiro de 1998, especialmente de que o servico voluntario nao gera vinculo empregaticio.'
+    },
+    {
+      num: '4.',
+      texto: 'O(a) voluntario(a) e a coordenacao da acao de Extensao comprometem-se a cumprir as condicoes expressas neste instrumento e as normas aplicaveis.'
+    }
+  ];
+
+  condicoes.forEach(condicao => {
+    doc.font('Helvetica-Bold').text(`${condicao.num} `, { continued: true });
+    doc.font('Helvetica').text(condicao.texto);
+
+    if (condicao.itens) {
+      condicao.itens.forEach(item => doc.text(item, { indent: 20 }));
+    }
+
+    doc.moveDown(0.4);
+  });
+
+  doc.moveDown(1);
+  doc
+    .fontSize(9)
+    .font('Helvetica')
+    .text('Local: _________________________     Data: ____/____/________');
+
+  doc.moveDown(1);
+  doc.font('Helvetica-Bold').fontSize(10).text('ACEITE E CONCORDANCIA', {
+    align: 'center'
+  });
+  doc
+    .font('Helvetica')
+    .fontSize(9)
+    .text(
+      'Este documento devera ser assinado pelo voluntario(a), pela coordenacao da acao e pela Diretoria de Relacoes Empresariais e Comunitarias.',
+      { align: 'center' }
+    );
+
+  doc.moveDown(2);
+  assinatura(doc, 'Voluntario(a)');
+  doc.moveDown(2);
+  assinatura(doc, 'Coordenacao da acao');
+  doc.moveDown(2);
+  assinatura(doc, 'Professor Orientador');
+  doc.moveDown(2);
+  assinatura(doc, 'DIREC');
+}
+
+function secao(doc, titulo) {
+  garantirEspaco(doc, 32);
+  doc.moveDown(0.3).fontSize(10).font('Helvetica-Bold').text(titulo).moveDown(0.2);
+}
+
+function secaoComEspaco(doc, titulo, alturaConteudo) {
+  garantirEspaco(doc, 32 + alturaConteudo);
+  doc.moveDown(0.3).fontSize(10).font('Helvetica-Bold').text(titulo).moveDown(0.2);
 }
 
 function caixaTexto(doc, texto, alturaMin = 18) {
   const x = 50;
-  const y = doc.y;
   const w = doc.page.width - 100;
-  doc.rect(x, y, w, alturaMin).stroke();
+  const altura = Math.max(alturaMin, doc.heightOfString(texto, { width: w - 8 }) + 8);
+  garantirEspaco(doc, altura);
+
+  const y = doc.y;
+  doc.rect(x, y, w, altura).stroke();
   doc.font('Helvetica').fontSize(9).text(texto, x + 4, y + 4, { width: w - 8 });
-  doc.y = y + alturaMin;
+  doc.y = y + altura;
 }
 
 function linha2colunas(doc, esq, dir) {
   const x = 50;
-  const y = doc.y;
   const w = doc.page.width - 100;
   const metade = w / 2;
-  const h = 18;
+  const h = 20;
+  garantirEspaco(doc, h);
+
+  const y = doc.y;
   doc.rect(x, y, metade, h).stroke();
   doc.rect(x + metade, y, metade, h).stroke();
   doc.font('Helvetica').fontSize(9);
-  doc.text(esq, x + 4, y + 4, { width: metade - 8 });
-  doc.text(dir, x + metade + 4, y + 4, { width: metade - 8 });
+  doc.text(esq, x + 4, y + 5, { width: metade - 8 });
+  doc.text(dir, x + metade + 4, y + 5, { width: metade - 8 });
   doc.y = y + h;
 }
 
 function linha3colunas(doc, a, b, c) {
   const x = 50;
-  const y = doc.y;
   const w = doc.page.width - 100;
-  const terco = w / 2;
-  const quarto = w / 4;
-  const h = 18;
-  doc.rect(x, y, terco, h).stroke();
-  doc.rect(x + terco, y, quarto, h).stroke();
-  doc.rect(x + terco + quarto, y, quarto, h).stroke();
+  const primeira = w / 2;
+  const outra = w / 4;
+  const h = 20;
+  garantirEspaco(doc, h);
+
+  const y = doc.y;
+  doc.rect(x, y, primeira, h).stroke();
+  doc.rect(x + primeira, y, outra, h).stroke();
+  doc.rect(x + primeira + outra, y, outra, h).stroke();
   doc.font('Helvetica').fontSize(9);
-  doc.text(a, x + 4, y + 4, { width: terco - 8 });
-  doc.text(b, x + terco + 4, y + 4, { width: quarto - 8 });
-  doc.text(c, x + terco + quarto + 4, y + 4, { width: quarto - 8 });
+  doc.text(a, x + 4, y + 5, { width: primeira - 8 });
+  doc.text(b, x + primeira + 4, y + 5, { width: outra - 8 });
+  doc.text(c, x + primeira + outra + 4, y + 5, { width: outra - 8 });
   doc.y = y + h;
 }
 
-function cronograma(doc, atividades) {
+function cronograma(doc, atividades, meses) {
   const x = 50;
-  const y = doc.y;
   const w = doc.page.width - 100;
-  const meses = 12;
-  const colunaAtiv = w * 0.3;
-  const colunaMes = (w - colunaAtiv) / meses;
-  const hCab = 20;
-  const hLinha = 16;
+  const colunaAtiv = w * 0.36;
+  const colunaMes = (w - colunaAtiv) / 12;
+  const hCab = 22;
+  const hLinha = 18;
   const totalAtiv = Math.max(atividades.length, 5);
-
-  // Cabeçalho PERÍODO
-  doc.rect(x, y, colunaAtiv, hCab).stroke();
-  doc.font('Helvetica-Bold').fontSize(8).text('PERÍODO', x + 4, y + 6, { width: colunaAtiv - 8, align: 'center' });
-
   const xIni = x + colunaAtiv;
-  doc.rect(xIni, y, w - colunaAtiv, hCab / 2).stroke();
-  doc.text('INÍCIO  ___/_____', xIni + 4, y + 3, { width: (w - colunaAtiv) / 2 - 8 });
-  doc.text('FIM  ___/_____', xIni + (w - colunaAtiv) / 2 + 4, y + 3, {
-    width: (w - colunaAtiv) / 2 - 8,
+  garantirEspaco(doc, alturaCronograma(atividades));
+
+  const y = doc.y;
+  doc.rect(x, y, colunaAtiv, hCab).stroke();
+  doc.font('Helvetica-Bold').fontSize(8).text('ATIVIDADES', x + 4, y + 7, {
+    width: colunaAtiv - 8,
+    align: 'center'
   });
 
-  // Cabeçalho ATIVIDADES / Meses
-  const y2 = y + hCab / 2;
-  doc.rect(x, y2, colunaAtiv, hCab / 2 + 4).stroke();
-  doc.text('ATIVIDADES', x + 4, y2 + 3, { width: colunaAtiv - 8, align: 'center' });
-
-  // Números dos meses
-  for (let m = 1; m <= meses; m++) {
+  for (let m = 1; m <= 12; m += 1) {
     const xm = xIni + (m - 1) * colunaMes;
-    doc.rect(xm, y2, colunaMes, hCab / 2 + 4).stroke();
-    doc.text(String(m), xm, y2 + 3, { width: colunaMes, align: 'center' });
+    doc.rect(xm, y, colunaMes, hCab).stroke();
+    doc.text(String(m), xm, y + 7, { width: colunaMes, align: 'center' });
   }
 
-  // Linhas de atividade
-  const y3 = y2 + hCab / 2 + 4;
-  for (let i = 0; i < totalAtiv; i++) {
-    const yl = y3 + i * hLinha;
+  for (let i = 0; i < totalAtiv; i += 1) {
+    const yl = y + hCab + i * hLinha;
     doc.rect(x, yl, colunaAtiv, hLinha).stroke();
-    doc.font('Helvetica').fontSize(8).text(String(i + 1), x + 4, yl + 4, { width: colunaAtiv - 8 });
-    for (let m = 0; m < meses; m++) {
-      doc.rect(xIni + m * colunaMes, yl, colunaMes, hLinha).stroke();
+    doc.font('Helvetica').fontSize(8).text(String(i + 1), x + 4, yl + 5, {
+      width: colunaAtiv - 8
+    });
+
+    for (let m = 1; m <= 12; m += 1) {
+      const xm = xIni + (m - 1) * colunaMes;
+      doc.rect(xm, yl, colunaMes, hLinha).stroke();
+
+      if (meses.includes(String(m))) {
+        doc.text('X', xm, yl + 5, { width: colunaMes, align: 'center' });
+      }
     }
   }
-  // Linha "..."
-  const yl = y3 + totalAtiv * hLinha;
-  doc.rect(x, yl, w, hLinha).stroke();
-  doc.text('...', x + 4, yl + 4);
 
-  doc.y = yl + hLinha + 10;
+  doc.y = y + hCab + totalAtiv * hLinha + 10;
+}
+
+function alturaCronograma(atividades) {
+  const hCab = 22;
+  const hLinha = 18;
+  const totalAtiv = Math.max(atividades.length, 5);
+
+  return hCab + totalAtiv * hLinha + 10;
+}
+
+function garantirEspaco(doc, alturaNecessaria) {
+  const limiteInferior = doc.page.height - doc.page.margins.bottom;
+
+  if (doc.y + alturaNecessaria > limiteInferior) {
+    doc.addPage();
+  }
 }
 
 function assinatura(doc, cargo) {
   const x = 150;
   const largura = 295;
+
   doc.moveTo(x, doc.y).lineTo(x + largura, doc.y).stroke();
   doc.font('Helvetica').fontSize(9).text(cargo, { align: 'center' });
 }
 
+function montarAtividades(voluntario) {
+  const textos = [voluntario.sintese, voluntario.cronograma_descricao].filter(Boolean);
+
+  const atividades = textos
+    .flatMap(texto => String(texto).split(/\r?\n|;/))
+    .map(texto => texto.trim())
+    .filter(Boolean);
+
+  return atividades.length ? atividades : ['Atividades de extensao vinculadas ao projeto ELLP.'];
+}
+
+function montarMeses(meses) {
+  if (!meses) return [];
+
+  if (Array.isArray(meses)) {
+    return meses.map(String);
+  }
+
+  try {
+    const parsed = JSON.parse(meses);
+    return Array.isArray(parsed) ? parsed.map(String) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function formatarData(data) {
+  if (!data) return '____/____/________';
+
+  const date = new Date(data);
+  if (Number.isNaN(date.getTime())) return String(data);
+
+  return date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+}
+
+function marcarSimNao(valorEstudante) {
+  const estudante = String(valorEstudante || '').toLowerCase();
+  return estudante === 'sim' || estudante === 'true'
+    ? '(X) sim   ( ) nao'
+    : '( ) sim   (X) nao';
+}
+
+function valor(valorCampo) {
+  return valorCampo || 'Nao informado';
+}
+
+function criarNomeArquivo(nome, id) {
+  const nomeLimpo = String(nome || `voluntario_${id}`)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase();
+
+  return `termo_${nomeLimpo || id}.pdf`;
+}
+
 module.exports = router;
+module.exports.gerarPdfTermo = gerarPdfTermo;

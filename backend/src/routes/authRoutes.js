@@ -3,17 +3,32 @@ const router = express.Router();
 const pool = require('../db');
 
 router.post('/login', async (req, res) => {
-  const { email, senha } = req.body;
+  const { login, senha } = req.body;
 
-  const result = await pool.query(
-    'SELECT * FROM administrador WHERE email = $1 AND senha = $2',
-    [email, senha]
-  );
+  try {
+    const result = await pool.query(
+      'SELECT * FROM coordenadores WHERE login = $1 AND senha = $2',
+      [login, senha]
+    );
 
-  if (result.rows.length > 0) {
-    res.json({ success: true, user: result.rows[0] });
-  } else {
-    res.status(401).json({ success: false, message: 'Login inválido' });
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        user: result.rows[0]
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: 'Login inválido'
+      });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro no servidor'
+    });
   }
 });
 

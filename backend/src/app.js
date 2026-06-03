@@ -30,6 +30,11 @@ app.use('/sinteses', sinteseRoutes);
 const cronogramaRoutes = require('./routes/cronogramaRoutes');
 app.use('/cronogramas', cronogramaRoutes);
 
+const coordenadorRoutes = require('./routes/coordenadorRoutes');
+app.use('/coordenadores', coordenadorRoutes);
+
+const gerarTermoRoutes = require('./routes/gerarTermo');
+app.use('/api', gerarTermoRoutes);
 const gerarTermo = require('./routes/gerarTermo');
 app.use('/api', gerarTermo);
 

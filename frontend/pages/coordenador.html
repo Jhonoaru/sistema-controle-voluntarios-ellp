@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro de Coordenador</title>
+
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/voluntario.css" />
+</head>
+
+<body>
+
+  <div class="topbar">
+    <img src="../images/logo.png" class="logo-img" alt="Logo ELLP" />
+    <div class="user">Coordenador</div>
+  </div>
+
+  <div class="container">
+
+    <h2 class="titulo" id="tituloPagina">
+      Cadastrar Coordenador
+    </h2>
+
+    <div class="card">
+
+      <form id="coordenadorForm">
+
+        <div class="campo full">
+          <label>Nome</label>
+          <input
+            id="nome"
+            type="text"
+            placeholder="Digite o nome"
+          />
+        </div>
+
+        <div class="campo full">
+          <label>Login</label>
+          <input
+            id="login"
+            type="text"
+            placeholder="Digite o login"
+          />
+        </div>
+
+        <div class="campo full">
+          <label>Senha</label>
+          <input
+            id="senha"
+            type="password"
+            placeholder="Digite a senha"
+          />
+        </div>
+
+        <div class="form-buttons">
+
+          <div class="left-buttons">
+            <button
+              type="submit"
+              class="btn-salvar">
+              Salvar
+            </button>
+
+            <button
+              type="button"
+              class="btn-cancelar"
+              onclick="cancelar()">
+              Cancelar
+            </button>
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <script src="../js/coordenador.js"></script>
+</body>
+</html>
