@@ -5,6 +5,13 @@ const pool = require('../db');
 router.post('/login', async (req, res) => {
   const { login, senha } = req.body;
 
+  if (!login || !senha) {
+    return res.status(400).json({
+      success: false,
+      message: 'Informe login e senha'
+    });
+  }
+
   try {
     const result = await pool.query(
       'SELECT * FROM coordenadores WHERE login = $1 AND senha = $2',
@@ -12,9 +19,15 @@ router.post('/login', async (req, res) => {
     );
 
     if (result.rows.length > 0) {
+      const usuario = result.rows[0];
+
       res.json({
         success: true,
-        user: result.rows[0]
+        user: {
+          id: usuario.id,
+          nome: usuario.nome,
+          login: usuario.login
+        }
       });
     } else {
       res.status(401).json({

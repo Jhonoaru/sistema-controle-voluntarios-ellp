@@ -6,84 +6,108 @@ function getId() {
 }
 
 async function carregarVoluntario() {
-  voluntarioId = getId();
+  try {
+    voluntarioId = getId();
 
-  const res = await fetch(`http://localhost:3001/voluntarios`);
-  const data = await res.json();
+    const res = await fetch('http://localhost:3001/voluntarios');
+    if (!res.ok) {
+      throw new Error('Erro ao carregar voluntario');
+    }
 
-  const v = data.find(v => v.id == voluntarioId);
-  if (!v) return;
+    const data = await res.json();
+    const v = data.find(voluntario => voluntario.id == voluntarioId);
 
-  document.getElementById('nome').value = v.nome || '';
-  document.getElementById('cpf').value = v.cpf || '';
-  document.getElementById('email').value = v.email || '';
-  document.getElementById('telefone').value = v.telefone || '';
-  document.getElementById('curso').value = v.curso || '';
-  document.getElementById('periodo').value = v.periodo || '';
-  document.getElementById('ra').value = v.ra || '';
-  document.getElementById('endereco').value = v.endereco || '';
-  document.getElementById('cidade').value = v.cidade || '';
-  document.getElementById('estado').value = v.estado || '';
-  document.getElementById('nacionalidade').value = v.nacionalidade || '';
+    if (!v) {
+      mostrarNotificacao('Voluntario nao encontrado.', 'erro');
+      return;
+    }
 
-  if (v.data_nascimento) {
-    document.getElementById('data_nascimento').value = v.data_nascimento.split('T')[0];
+    document.getElementById('nome').value = v.nome || '';
+    document.getElementById('cpf').value = formatarCpf(v.cpf || '');
+    document.getElementById('email').value = v.email || '';
+    document.getElementById('telefone').value = formatarTelefone(v.telefone || '');
+    document.getElementById('curso').value = v.curso || '';
+    document.getElementById('periodo').value = v.periodo || '';
+    document.getElementById('ra').value = v.ra || '';
+    document.getElementById('endereco').value = v.endereco || '';
+    document.getElementById('cidade').value = v.cidade || '';
+    document.getElementById('estado').value = v.estado || '';
+    document.getElementById('nacionalidade').value = v.nacionalidade || '';
+
+    if (v.data_nascimento) {
+      document.getElementById('data_nascimento').value = v.data_nascimento.split('T')[0];
+    }
+
+    if (v.ativo !== undefined) {
+      document.querySelector(`input[name="ativo"][value="${v.ativo}"]`).checked = true;
+    }
+
+    if (v.estudante) {
+      const estudante = document.querySelector(`input[name="estudante"][value="${v.estudante}"]`);
+      if (estudante) {
+        estudante.checked = true;
+      }
+    }
+
+    await carregarCronogramas(v.cronograma_id);
+  } catch (error) {
+    console.error('Erro ao carregar voluntario:', error);
+    mostrarNotificacao('Erro ao carregar voluntario.', 'erro');
   }
-
-  if (v.ativo !== undefined) {
-    document.querySelector(`input[name="ativo"][value="${v.ativo}"]`).checked = true;
-  }
-
-  await carregarCronogramas(v.cronograma_id);
 }
 
 async function salvar() {
-  const ativo = document.querySelector('input[name="ativo"]:checked')?.value;
+  const dados = obterDadosVoluntario({ incluirAtivo: true });
 
-  const dados = {
-    nome: document.getElementById('nome').value,
-    cpf: document.getElementById('cpf').value,
-    email: document.getElementById('email').value,
-    telefone: document.getElementById('telefone').value,
-    curso: document.getElementById('curso').value,
-    periodo: document.getElementById('periodo').value,
-    ra: document.getElementById('ra').value,
-    endereco: document.getElementById('endereco').value,
-    cidade: document.getElementById('cidade').value,
-    estado: document.getElementById('estado').value,
-    nacionalidade: document.getElementById('nacionalidade').value,
-    data_nascimento: document.getElementById('data_nascimento').value,
-    ativo: ativo === 'true',
-    cronograma_id: document.getElementById('cronograma').value || null
-  };
+  if (!validarVoluntario(dados, { validarAtivo: true })) return;
+  delete dados.ativoSelecionado;
 
-  await fetch(`http://localhost:3001/voluntarios/${voluntarioId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dados)
-  });
+  try {
+    const res = await fetch(`http://localhost:3001/voluntarios/${voluntarioId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
 
-  window.location.href = 'dashboard.html';
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Erro ao salvar voluntario');
+    }
+
+    salvarNotificacaoPendente('Voluntario atualizado com sucesso.', 'sucesso');
+    window.location.href = 'dashboard.html';
+  } catch (error) {
+    console.error('Erro ao salvar voluntario:', error);
+    mostrarNotificacao(error.message || 'Nao foi possivel salvar o voluntario.', 'erro');
+  }
 }
 
 async function carregarCronogramas(selectedId = null) {
-  const res = await fetch('http://localhost:3001/cronogramas');
-  const data = await res.json();
-
-  const select = document.getElementById('cronograma');
-  select.innerHTML = '<option value="">Selecione</option>';
-
-  data.forEach(c => {
-    const option = document.createElement('option');
-    option.value = c.id;
-    option.text = c.nome;
-
-    if (selectedId && c.id == selectedId) {
-      option.selected = true;
+  try {
+    const res = await fetch('http://localhost:3001/cronogramas');
+    if (!res.ok) {
+      throw new Error('Erro ao carregar cronogramas');
     }
 
-    select.appendChild(option);
-  });
+    const data = await res.json();
+    const select = document.getElementById('cronograma');
+    select.innerHTML = '<option value="">Selecione</option>';
+
+    data.forEach(c => {
+      const option = document.createElement('option');
+      option.value = c.id;
+      option.text = c.nome;
+
+      if (selectedId && c.id == selectedId) {
+        option.selected = true;
+      }
+
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar cronogramas:', error);
+    mostrarNotificacao('Erro ao carregar cronogramas.', 'erro');
+  }
 }
 
 function voltar() {
@@ -91,15 +115,23 @@ function voltar() {
 }
 
 async function excluir() {
-  if (!confirm('Tem certeza que deseja excluir este voluntário?')) return;
+  if (!confirm('Tem certeza que deseja excluir este voluntario?')) return;
 
-  await fetch(`http://localhost:3001/voluntarios/${voluntarioId}`, {
-    method: 'DELETE'
-  });
+  try {
+    const res = await fetch(`http://localhost:3001/voluntarios/${voluntarioId}`, {
+      method: 'DELETE'
+    });
 
-  alert('Voluntário excluído com sucesso');
+    if (!res.ok) {
+      throw new Error('Erro ao excluir voluntario');
+    }
 
-  window.location.href = 'dashboard.html';
+    salvarNotificacaoPendente('Voluntario excluido com sucesso.', 'sucesso');
+    window.location.href = 'dashboard.html';
+  } catch (error) {
+    console.error('Erro ao excluir voluntario:', error);
+    mostrarNotificacao('Nao foi possivel excluir o voluntario.', 'erro');
+  }
 }
 
 carregarVoluntario();

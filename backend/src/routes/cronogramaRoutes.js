@@ -8,7 +8,13 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { nome, descricao, data_inicio, data_fim, meses } = req.body;
+  const { nome, descricao, data_inicio, data_fim, meses = [] } = req.body;
+
+  if (!datasValidas(data_inicio, data_fim)) {
+    return res.status(400).json({
+      error: 'Datas invalidas para o cronograma'
+    });
+  }
 
   const result = await pool.query(
     `INSERT INTO cronograma (nome, descricao, data_inicio, data_fim, meses)
@@ -22,7 +28,13 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, descricao, data_inicio, data_fim, meses } = req.body;
+  const { nome, descricao, data_inicio, data_fim, meses = [] } = req.body;
+
+  if (!datasValidas(data_inicio, data_fim)) {
+    return res.status(400).json({
+      error: 'Datas invalidas para o cronograma'
+    });
+  }
 
   const result = await pool.query(
     `UPDATE cronograma
@@ -67,5 +79,27 @@ router.delete('/:id', async (req, res) => {
     });
   }
 });
+
+function datasValidas(dataInicio, dataFim) {
+  if (!dataInicio || !dataFim) {
+    return false;
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio) || !/^\d{4}-\d{2}-\d{2}$/.test(dataFim)) {
+    return false;
+  }
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const maximo = new Date();
+  maximo.setFullYear(maximo.getFullYear() + 5);
+  maximo.setHours(23, 59, 59, 999);
+
+  const inicio = new Date(`${dataInicio}T00:00:00`);
+  const fim = new Date(`${dataFim}T00:00:00`);
+
+  return inicio >= hoje && fim >= inicio && inicio <= maximo && fim <= maximo;
+}
 
 module.exports = router;

@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     }
 
     const existe = await pool.query(
-      'SELECT * FROM coordenadores WHERE login = $1',
+      'SELECT id FROM coordenadores WHERE LOWER(login) = LOWER($1)',
       [login]
     );
 
@@ -75,6 +75,13 @@ router.post('/', async (req, res) => {
   } catch (error) {
 
     console.error(error);
+
+    const erroDuplicidade = mensagemErroDuplicidade(error);
+    if (erroDuplicidade) {
+      return res.status(409).json({
+        error: erroDuplicidade
+      });
+    }
 
     res.status(500).json({
       error: 'Erro ao cadastrar coordenador'
@@ -111,10 +118,29 @@ router.put('/:id', async (req, res) => {
 
     console.error(error);
 
+    const erroDuplicidade = mensagemErroDuplicidade(error);
+    if (erroDuplicidade) {
+      return res.status(409).json({
+        error: erroDuplicidade
+      });
+    }
+
     res.status(500).json({
       error: 'Erro ao atualizar coordenador'
     });
   }
 });
+
+function mensagemErroDuplicidade(error) {
+  if (error.code !== '23505') {
+    return null;
+  }
+
+  if (['coordenadores_login_key', 'coordenadores_login_unique'].includes(error.constraint)) {
+    return 'Este login ja esta cadastrado';
+  }
+
+  return 'Ja existe um coordenador com estes dados';
+}
 
 module.exports = router;
