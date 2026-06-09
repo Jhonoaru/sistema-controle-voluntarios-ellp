@@ -175,6 +175,16 @@ h2 {
 	background: #f1f1f1;
 }
 
+.actions .btn-termo {
+	border-color: #3498db;
+	color: #3498db;
+	font-weight: bold;
+}
+
+.actions .btn-termo:hover {
+	background: #ecf6fd;
+}
+
 /* BOTÃO DESATIVADO */
 button:disabled {
 	background: #ddd;

@@ -5,6 +5,7 @@
 		<title>Cadastrar Voluntário</title>
 		<link rel="stylesheet" href="../css/style.css" />
 		<link rel="stylesheet" href="../css/voluntario.css" />
+		<link rel="stylesheet" href="../css/notificacoes.css" />
 	</head>
 	<body>
 		<div class="topbar">
@@ -16,72 +17,72 @@
 			<div class="card">
 				<div class="campo full">
 					<label>Nome do voluntário</label>
-					<input id="nome" placeholder="João da Silva" />
+					<input id="nome" placeholder="João da Silva" required />
 				</div>
 				<div class="campo full">
 					<label>Data de nascimento</label>
-					<input id="data_nascimento" type="date" />
+					<input id="data_nascimento" type="date" required />
 				</div>
 				<div class="campo full">
 					<label>CPF</label>
-					<input id="cpf" placeholder="123456789" />
+					<input id="cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" required />
 				</div>
 				<div class="campo full">
 					<label>Nacionalidade</label>
-					<input id="nacionalidade" placeholder="Brasileiro" />
+					<input id="nacionalidade" placeholder="Brasileiro" required />
 				</div>
 				<div class="campo full">
 					<label>Estudante da UTFPR</label>
 					<div class="radio-group">
 						<label
-							><input type="radio" name="estudante" value="sim" /> Sim</label
+							><input type="radio" name="estudante" value="sim" required /> Sim</label
 						>
 						<label
-							><input type="radio" name="estudante" value="nao" /> Não</label
+							><input type="radio" name="estudante" value="nao" required /> Não</label
 						>
 					</div>
 				</div>
 				<div class="grid-3">
 					<div class="campo">
 						<label>Curso</label>
-						<input id="curso" placeholder="Engenharia de Software" />
+						<input id="curso" placeholder="Engenharia de Software" required />
 					</div>
 					<div class="campo">
 						<label>Período</label>
-						<input id="periodo" placeholder="5" />
+						<input id="periodo" placeholder="5" inputmode="numeric" required />
 					</div>
 					<div class="campo">
 						<label>RA</label>
-						<input id="ra" placeholder="123456" />
+						<input id="ra" placeholder="123456" inputmode="numeric" required />
 					</div>
 				</div>
 				<div class="campo full">
 					<label>Endereço</label>
-					<input id="endereco" placeholder="Avenida Brasil, 123" />
+					<input id="endereco" placeholder="Avenida Brasil, 123" required />
 				</div>
 				<div class="grid-2">
 					<div class="campo">
 						<label>Cidade</label>
-						<input id="cidade" placeholder="Cornélio Procópio" />
+						<input id="cidade" placeholder="Cornélio Procópio" required />
 					</div>
 					<div class="campo">
 						<label>Estado</label>
-						<input id="estado" placeholder="Paraná" />
+						<input id="estado" placeholder="Paraná" required />
 					</div>
 				</div>
 				<div class="grid-2">
 					<div class="campo">
 						<label>E-mail</label>
-						<input id="email" placeholder="email@utfpr.edu.br" />
+						<input id="email" type="email" placeholder="email@utfpr.edu.br" required />
 					</div>
 					<div class="campo">
 						<label>Telefone</label>
-						<input id="telefone" placeholder="43999999999" />
+						<input id="telefone" placeholder="(43) 99999-9999" inputmode="numeric" maxlength="15" required />
 					</div>
 				</div>
 				<div class="campo full">
 					<label>Cronograma</label>
-					<select id="cronograma">
+					<select id="cronograma" required>
 						<option value="">Selecione</option>
 					</select>
 				</div>
@@ -91,6 +92,8 @@
 				</div>
 			</div>
 		</div>
+		<script src="../js/notificacoes.js"></script>
+		<script src="../js/validacaoVoluntario.js"></script>
 		<script src="../js/voluntario.js"></script>
 	</body>
 </html>

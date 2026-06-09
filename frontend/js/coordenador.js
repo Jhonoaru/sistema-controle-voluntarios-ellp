@@ -8,12 +8,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const coordenadorId = urlParams.get('id');
 
 window.onload = async () => {
-
   if (coordenadorId) {
-
-    document.getElementById('tituloPagina').innerText =
-      'Editar Coordenador';
-
+    document.getElementById('tituloPagina').innerText = 'Editar Coordenador';
     await carregarCoordenador();
   }
 
@@ -23,13 +19,11 @@ window.onload = async () => {
 };
 
 async function carregarCoordenador() {
-
   try {
-
     const res = await fetch(`${API_URL}/${coordenadorId}`);
 
     if (!res.ok) {
-      throw new Error();
+      throw new Error('Erro ao carregar coordenador');
     }
 
     const c = await res.json();
@@ -37,17 +31,13 @@ async function carregarCoordenador() {
     document.getElementById('nome').value = c.nome || '';
     document.getElementById('login').value = c.login || '';
     document.getElementById('senha').value = c.senha || '';
-
   } catch (error) {
-
-    console.error(error);
-
-    alert('Erro ao carregar coordenador.');
+    console.error('Erro ao carregar coordenador:', error);
+    mostrarNotificacao('Erro ao carregar coordenador.', 'erro');
   }
 }
 
 async function salvarCoordenador(e) {
-
   e.preventDefault();
 
   const nome = document.getElementById('nome').value.trim();
@@ -55,9 +45,7 @@ async function salvarCoordenador(e) {
   const senha = document.getElementById('senha').value.trim();
 
   if (!nome || !login || !senha) {
-
-    alert('Preencha todos os campos.');
-
+    mostrarNotificacao('Preencha todos os campos.', 'erro');
     return;
   }
 
@@ -68,14 +56,8 @@ async function salvarCoordenador(e) {
   };
 
   try {
-
-    const metodo = coordenadorId
-      ? 'PUT'
-      : 'POST';
-
-    const url = coordenadorId
-      ? `${API_URL}/${coordenadorId}`
-      : API_URL;
+    const metodo = coordenadorId ? 'PUT' : 'POST';
+    const url = coordenadorId ? `${API_URL}/${coordenadorId}` : API_URL;
 
     const res = await fetch(url, {
       method: metodo,
@@ -88,25 +70,21 @@ async function salvarCoordenador(e) {
     const data = await res.json();
 
     if (!res.ok) {
-
-      alert(data.error || 'Erro ao salvar.');
-
+      mostrarNotificacao(data.error || 'Erro ao salvar coordenador.', 'erro');
       return;
     }
 
-    alert(
+    salvarNotificacaoPendente(
       coordenadorId
-        ? 'Coordenador atualizado com sucesso!'
-        : 'Coordenador criado com sucesso!'
+        ? 'Coordenador atualizado com sucesso.'
+        : 'Coordenador criado com sucesso.',
+      'sucesso'
     );
 
     window.location.href = 'dashboard.html';
-
   } catch (error) {
-
-    console.error(error);
-
-    alert('Erro ao conectar com o servidor.');
+    console.error('Erro ao salvar coordenador:', error);
+    mostrarNotificacao('Erro ao conectar com o servidor.', 'erro');
   }
 }
 
