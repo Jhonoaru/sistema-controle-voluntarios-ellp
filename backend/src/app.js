@@ -1,8 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-
-const pool = require('./db');
+const { autenticar } = require('./middleware/autenticacao');
 
 const app = express();
 
@@ -10,19 +9,16 @@ app.use(cors());
 app.use(express.json({ limit: '100kb' }));
 
 app.get('/', (req, res) => {
-  res.send('API ELLP rodando 🚀');
+  res.json({ message: 'API ELLP rodando' });
 });
-
-app.get('/test-db', async (req, res) => {
-  const result = await pool.query('SELECT NOW()');
-  res.json(result.rows[0]);
-});
-
-const voluntarioRoutes = require('./routes/voluntarioRoutes');
-app.use('/voluntarios', voluntarioRoutes);
 
 const authRoutes = require('./routes/authRoutes');
 app.use('/auth', authRoutes);
+
+app.use(autenticar);
+
+const voluntarioRoutes = require('./routes/voluntarioRoutes');
+app.use('/voluntarios', voluntarioRoutes);
 
 const sinteseRoutes = require('./routes/sinteseRoutes');
 app.use('/sinteses', sinteseRoutes);
@@ -36,8 +32,15 @@ app.use('/coordenadores', coordenadorRoutes);
 const gerarTermoRoutes = require('./routes/gerarTermo');
 app.use('/api', gerarTermoRoutes);
 
+const auditoriaRoutes = require('./routes/auditoriaRoutes');
+app.use('/auditoria', auditoriaRoutes);
+
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+  });
+}
+
+module.exports = app;

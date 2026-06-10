@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const { registrarAuditoria } = require('../services/auditoria');
 
 router.get('/', async (req, res) => {
   try {
@@ -28,9 +29,20 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query('DELETE FROM voluntario WHERE id = $1', [id]);
+    const result = await pool.query(
+      'UPDATE voluntario SET ativo = FALSE WHERE id = $1 RETURNING id, nome',
+      [id]
+    );
 
-    res.json({ message: 'Voluntário removido' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Voluntario nao encontrado' });
+    }
+
+    await registrarAuditoria(pool, req.usuario, 'DESATIVAR', 'voluntario', id, {
+      nome: result.rows[0].nome
+    });
+
+    res.json({ message: 'Voluntario desativado' });
 
   } catch (error) {
     console.error(error);
@@ -89,16 +101,20 @@ router.post('/', async (req, res) => {
       ]
     );
 
+    await registrarAuditoria(pool, req.usuario, 'CRIAR', 'voluntario', result.rows[0].id, {
+      nome: result.rows[0].nome
+    });
+
     res.json(result.rows[0]);
 
   } catch (error) {
-    console.error(error);
     const erroDuplicidade = mensagemErroDuplicidade(error);
 
     if (erroDuplicidade) {
       return res.status(409).json({ error: erroDuplicidade });
     }
 
+    console.error(error);
     res.status(500).json({ error: 'Erro ao criar voluntário' });
   }
 });
@@ -168,21 +184,30 @@ router.put('/:id', async (req, res) => {
         endereco || null,
         cidade || null,
         estado || null,
-        ativo, // 🔥 AQUI
+        ativo,
         id
       ]
     );
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Voluntario nao encontrado' });
+    }
+
+    await registrarAuditoria(pool, req.usuario, 'ATUALIZAR', 'voluntario', id, {
+      nome: result.rows[0].nome,
+      ativo: result.rows[0].ativo
+    });
+
     res.json(result.rows[0]);
 
   } catch (error) {
-    console.error(error);
     const erroDuplicidade = mensagemErroDuplicidade(error);
 
     if (erroDuplicidade) {
       return res.status(409).json({ error: erroDuplicidade });
     }
 
+    console.error(error);
     res.status(500).json({ error: 'Erro ao atualizar voluntário' });
   }
 });

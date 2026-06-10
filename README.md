@@ -1,172 +1,190 @@
-# 📖 Sistema de Controle de Voluntários ELLP
+# Sistema de Controle de Voluntários ELLP
 
-> Sistema web desenvolvido para gerenciamento de voluntários da ELLP, permitindo o controle de cadastros, status de participação e cronogramas de atividades.
+Sistema web para gerenciamento de voluntários da ELLP, com cadastro, edição, controle de status, cronogramas e geração do termo de adesão em PDF.
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
-- **Login Administrativo**: Controle de acesso ao sistema.
-- **Cadastro de Voluntários**: Registro de novos voluntários.
-- **Edição de Dados**: Atualização das informações cadastradas.
-- **Exclusão de Voluntários**: Remoção de registros do sistema.
-- **Controle de Status**: Gerenciamento de voluntários ativos e inativos.
-- **Cadastro de Cronogramas**: Organização das atividades e eventos.
+- Login protegido por token JWT.
+- Senhas protegidas com hash bcrypt.
+- Cadastro e edição de coordenadores.
+- Cadastro, edição e desativação de voluntários.
+- Validação de CPF, telefone, e-mail, datas e campos obrigatórios.
+- Controle de voluntários ativos e inativos.
+- Cadastro, edição e exclusão de cronogramas.
+- Busca de voluntários por RA.
+- Geração e download do termo de adesão em PDF.
+- Notificações de sucesso, erro e validação.
+- Histórico de auditoria das alterações realizadas.
 
-## 📂 Estrutura do Projeto
+## Tecnologias
 
-O projeto está organizado em duas partes principais: `frontend` e `backend`.
+- Frontend: HTML, CSS e JavaScript.
+- Backend: Node.js e Express.
+- Banco de dados: PostgreSQL.
+- Bibliotecas: `pg`, `dotenv`, `cors`, `pdfkit`, `bcrypt`, `jsonwebtoken` e `nodemon`.
 
-### **Back-end (`backend/`)**
+## Estrutura
 
-```bash
-src/
-├── config/           # Configurações da aplicação e banco de dados
-├── controllers/      # Lógica das funcionalidades
-├── routes/           # Rotas da aplicação
-├── services/         # Serviços e regras de negócio
-└── app.js            # Arquivo principal da aplicação
+```text
+.
+├── backend/
+│   ├── src/
+│   │   ├── routes/
+│   │   ├── app.js
+│   │   └── db.js
+│   ├── .env.example
+│   └── package.json
+├── frontend/
+│   ├── css/
+│   ├── images/
+│   ├── js/
+│   └── pages/
+└── script.sql
 ```
 
-## 🔧 Instruções de Uso
-
-> Para executar o projeto localmente, siga os passos abaixo:
+## Instalação
 
 ### 1. Pré-requisitos
 
-- É necessário ter o [Node.js](https://nodejs.org/) instalado.
-- É necessário ter o [PostgreSQL](https://www.postgresql.org/) instalado e em execução.
-- É recomendado utilizar o [Git](https://git-scm.com/) para clonar o repositório.
+- Node.js 18 ou superior.
+- PostgreSQL.
+- pgAdmin ou outro cliente PostgreSQL.
+- Git.
 
-### 2. Clone o repositório
+### 2. Clone o projeto
 
 ```bash
 git clone https://github.com/Jhonoaru/sistema-controle-voluntarios-ellp.git
+cd sistema-controle-voluntarios-ellp
 ```
 
-```bash
-cd sistema-controle-voluntarios-ellp/backend
+### 3. Crie e configure o banco
+
+No pgAdmin, conectado ao banco padrão `postgres`, crie um banco vazio:
+
+```sql
+CREATE DATABASE ellp_db;
 ```
 
-### 3. Instale as dependências
+Abra o Query Tool do banco `ellp_db`, cole todo o conteúdo de `script.sql` e execute.
 
-```bash
-npm install
+O script cria as tabelas, relacionamentos, validações, índices e o usuário inicial:
+
+```text
+Login: admin
+Senha: admin123
 ```
 
-### 4. Configure as variáveis de ambiente
+Troque essa senha após o primeiro acesso.
 
-Crie um arquivo chamado `.env` na raiz da pasta `backend` e preencha com as seguintes informações:
+### 4. Configure o backend
+
+Dentro de `backend/`, crie um arquivo chamado `.env` usando `.env.example` como modelo:
 
 ```env
 PORT=3001
+JWT_SECRET=troque_por_uma_chave_longa_e_aleatoria
 
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=sua_senha
-DB_DATABASE=ellp
+DB_PASSWORD=sua_senha_do_postgresql
+DB_DATABASE=ellp_db
 ```
 
-### 5. Configure o banco de dados
-
-Execute o script SQL responsável pela criação do banco e tabelas:
+Instale as dependências:
 
 ```bash
-script.sql
+cd backend
+npm install
 ```
 
-### 6. Execute o servidor
-
-#### Ambiente de desenvolvimento
+Inicie o servidor:
 
 ```bash
 npm run dev
 ```
 
-#### Ambiente de produção
+A API estará disponível em `http://localhost:3001`.
+
+O valor de `JWT_SECRET` deve ser longo, aleatório e não deve ser enviado ao GitHub.
+
+### 5. Abra o frontend
+
+Abra `frontend/pages/login.html` no navegador. Para uma experiência melhor, use a extensão Live Server do VS Code.
+
+Entre usando o usuário inicial criado pelo `script.sql`.
+
+O endereço utilizado pelo frontend para acessar a API fica centralizado em `frontend/js/config.js`.
+
+## Scripts do backend
 
 ```bash
+npm run dev
 npm start
+npm test
 ```
 
-### 7. Acesse a aplicação
+- `npm run dev`: inicia com reinicialização automática.
+- `npm start`: inicia normalmente.
+- `npm test`: executa os testes automatizados em um ambiente isolado.
 
-O servidor estará disponível em:
+## Testes automatizados
+
+Os testes estão em `backend/tests/api.test.js` e verificam autenticação JWT,
+bcrypt, coordenadores, cronogramas, voluntários, duplicidades, geração do PDF,
+desativação lógica e auditoria.
+
+Para executar:
 
 ```bash
-http://localhost:3001
+cd backend
+npm test
 ```
 
-## 🛠️ Tecnologias Utilizadas
+Os testes criam o schema temporário `ellp_test_automatizado` no PostgreSQL e o
+apagam ao terminar. Os dados reais do sistema não são alterados.
 
-### **Front-end**
+O arquivo `TESTES_AUTOMATIZADOS.txt` contém uma explicação completa e um roteiro
+curto para apresentação.
 
-- HTML5
-- CSS3
-- JavaScript
+## Configuração do banco
 
-### **Back-end**
+O arquivo `script.sql` foi validado em PostgreSQL e pode ser executado diretamente dentro de um banco vazio. Ele cria:
 
-- [Node.js](https://nodejs.org/)
-- [Express.js](https://expressjs.com/pt-br/)
+- `coordenadores`
+- `sintese`
+- `cronograma`
+- `voluntario`
+- `auditoria`
+- chaves primárias e estrangeiras
+- índices únicos para login, CPF, RA e e-mail
+- validações dos principais dados
+- usuário inicial para o primeiro acesso
+- senha inicial protegida com bcrypt
+- histórico de alterações realizadas pelos coordenadores
 
-### **Banco de Dados**
+### Atualizando um banco existente
 
-- [PostgreSQL](https://www.postgresql.org/)
+Execute novamente o conteúdo atualizado de `script.sql` dentro do banco existente. O script cria a tabela de auditoria e converte a senha padrão antiga do administrador para bcrypt sem apagar os dados existentes.
 
-### **Ferramentas e Bibliotecas**
+Além disso, o primeiro login de qualquer coordenador que ainda possua uma senha antiga converte essa senha automaticamente para bcrypt.
 
-- [Git](https://git-scm.com/)
-- [GitHub](https://github.com/)
-- [Nodemon](https://nodemon.io/)
-- [dotenv](https://www.npmjs.com/package/dotenv)
-- [CORS](https://www.npmjs.com/package/cors)
+## Segurança
 
-## 📦 Dependências
+- Rotas da API protegidas por JWT.
+- Tokens expiram após 8 horas.
+- Senhas armazenadas com bcrypt.
+- Respostas da API não retornam senhas.
+- Exclusão de voluntários realizada como desativação.
+- Alterações registradas na tabela `auditoria`.
 
-### Dependências principais
+Para consultar as últimas alterações autenticadas:
 
-```bash
-npm install express pg cors dotenv
+```text
+GET http://localhost:3001/auditoria
 ```
 
-### Dependências de desenvolvimento
+## Status
 
-```bash
-npm install nodemon --save-dev
-```
-
-## 📜 Scripts Disponíveis
-
-```json
-"scripts": {
-  "start": "node src/app.js",
-  "dev": "nodemon src/app.js"
-}
-```
-
-## 🌱 Git Flow
-
-### Atualizar o projeto
-
-```bash
-git checkout develop
-git pull origin develop
-```
-
-### Criar uma nova branch
-
-```bash
-git checkout -b feature/nome-feature
-```
-
-### Subir alterações
-
-```bash
-git add .
-git commit -m "feat: descrição"
-git push
-```
-
-## 📌 Status do Projeto
-
-> 🚀 Projeto em desenvolvimento.
+Versão acadêmica final funcional.

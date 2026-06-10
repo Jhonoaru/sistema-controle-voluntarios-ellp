@@ -1,4 +1,6 @@
 let cronogramas = [];
+exigirAutenticacao();
+
 let cronogramaEditandoId = null;
 
 async function salvar() {
@@ -27,10 +29,10 @@ async function salvar() {
   try {
     const editando = cronogramaEditandoId !== null;
     const url = editando
-      ? `http://localhost:3001/cronogramas/${cronogramaEditandoId}`
-      : 'http://localhost:3001/cronogramas';
+      ? `/cronogramas/${cronogramaEditandoId}`
+      : '/cronogramas';
 
-    const res = await fetch(url, {
+    const res = await apiFetch(url, {
       method: editando ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -64,7 +66,7 @@ function limparFormulario() {
 
 async function carregarCronogramas() {
   try {
-    const res = await fetch('http://localhost:3001/cronogramas');
+    const res = await apiFetch('/cronogramas');
     if (!res.ok) {
       throw new Error('Erro ao carregar cronogramas');
     }
@@ -124,7 +126,7 @@ async function deletar(id) {
   if (!confirm('Deseja excluir este cronograma?')) return;
 
   try {
-    const res = await fetch(`http://localhost:3001/cronogramas/${id}`, {
+    const res = await apiFetch(`/cronogramas/${id}`, {
       method: 'DELETE'
     });
 
