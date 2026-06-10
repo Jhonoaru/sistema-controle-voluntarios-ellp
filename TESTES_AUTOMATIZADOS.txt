@@ -1,0 +1,70 @@
+ROTEIRO DE EXECUCAO DOS TESTES AUTOMATIZADOS
+============================================
+
+PRE-REQUISITOS
+
+- PostgreSQL iniciado.
+- Banco e credenciais configurados em backend/.env.
+- Dependencias instaladas com npm install.
+
+
+EXECUCAO
+
+No terminal:
+
+cd backend
+npm test
+
+
+RESULTADO ESPERADO
+
+O terminal deve finalizar com:
+
+tests: 16
+pass: 16
+fail: 0
+
+
+ESCOPO VALIDADO
+
+- Bloqueio de rota privada sem token JWT.
+- Bloqueio de token JWT invalido.
+- Rejeicao de login incorreto.
+- Login correto com emissao de token.
+- Senhas armazenadas com bcrypt.
+- Cadastro e login de coordenador.
+- Senha nao exposta pela API.
+- Cadastro de cronograma valido.
+- Rejeicao de cronograma com datas invalidas.
+- Rejeicao de CPF invalido.
+- Cadastro de voluntario.
+- Bloqueio de CPF duplicado.
+- Geracao do termo em PDF.
+- Desativacao logica de voluntario.
+- Registro das operacoes na auditoria.
+
+
+ISOLAMENTO DO BANCO
+
+Durante a execucao e criado o schema temporario:
+
+ellp_test_automatizado
+
+O schema recebe todos os registros utilizados pelos testes e e removido
+automaticamente ao final. O schema public e os dados reais nao sao alterados.
+
+
+ARQUIVOS PRINCIPAIS
+
+- backend/tests/api.test.js: implementacao dos testes.
+- backend/package.json: comando npm test.
+- script.sql: estrutura utilizada para preparar o banco temporario.
+
+
+DEMONSTRACAO SUGERIDA
+
+1. Exibir o arquivo backend/tests/api.test.js.
+2. Executar npm test dentro da pasta backend.
+3. Mostrar os 16 testes aprovados e fail igual a zero.
+4. Consultar os schemas no PostgreSQL para confirmar que
+   ellp_test_automatizado foi removido.

@@ -4,11 +4,16 @@
 	<meta charset="UTF-8" />
 	<title>Voluntários</title>
 	<link rel="stylesheet" href="../css/telainicial.css" />
+	<link rel="stylesheet" href="../css/notificacoes.css" />
 </head>
 <body>
 	<div class="topbar">
-		<img src="../images/logo.png" class="logo-img" />
-		<div class="user">Name</div>
+		<img src="../images/logo.png" class="logo-img" alt="Logo ELLP" />
+		<div class="topbar-actions">
+			<div class="user">Coordenador</div>
+			<button onclick="irMinhaConta()">Minha conta</button>
+			<button onclick="logout()">Sair</button>
+		</div>
 	</div>
 
 	<div class="container">
@@ -41,6 +46,8 @@
 		<button onclick="irCoordenador()">Cadastrar Coordenador</button>
 	</div>
 
+	<script src="../js/config.js"></script>
+	<script src="../js/notificacoes.js"></script>
 	<script src="../js/dashboard.js"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@
 		<title>Editar Voluntário</title>
 		<link rel="stylesheet" href="../css/style.css" />
 		<link rel="stylesheet" href="../css/voluntario.css" />
+		<link rel="stylesheet" href="../css/notificacoes.css" />
 	</head>
 	<body>
 		<div class="topbar">
@@ -16,28 +17,28 @@
 			<div class="card">
 				<div class="campo full">
 					<label>Nome do voluntário</label>
-					<input id="nome" />
+					<input id="nome" required />
 				</div>
 				<div class="campo full">
 					<label>Data de nascimento</label>
-					<input id="data_nascimento" type="date" />
+					<input id="data_nascimento" type="date" required />
 				</div>
 				<div class="campo full">
 					<label>CPF</label>
-					<input id="cpf" />
+					<input id="cpf" inputmode="numeric" maxlength="14" required />
 				</div>
 				<div class="campo full">
 					<label>Nacionalidade</label>
-					<input id="nacionalidade" />
+					<input id="nacionalidade" required />
 				</div>
 				<div class="campo full">
 					<label>Status</label>
 					<div class="radio-group">
 						<label
-							><input type="radio" name="ativo" value="true" /> Ativo</label
+							><input type="radio" name="ativo" value="true" required /> Ativo</label
 						>
 						<label
-							><input type="radio" name="ativo" value="false" /> Inativo</label
+							><input type="radio" name="ativo" value="false" required /> Inativo</label
 						>
 					</div>
 				</div>
@@ -45,54 +46,54 @@
 					<label>Estudante da UTFPR</label>
 					<div class="radio-group">
 						<label
-							><input type="radio" name="estudante" value="sim" /> Sim</label
+							><input type="radio" name="estudante" value="sim" required /> Sim</label
 						>
 						<label
-							><input type="radio" name="estudante" value="nao" /> Não</label
+							><input type="radio" name="estudante" value="nao" required /> Não</label
 						>
 					</div>
 				</div>
 				<div class="grid-3">
 					<div class="campo">
 						<label>Curso</label>
-						<input id="curso" />
+						<input id="curso" required />
 					</div>
 					<div class="campo">
 						<label>Período</label>
-						<input id="periodo" />
+						<input id="periodo" inputmode="numeric" required />
 					</div>
 					<div class="campo">
 						<label>RA</label>
-						<input id="ra" />
+						<input id="ra" inputmode="numeric" required />
 					</div>
 				</div>
 				<div class="campo full">
 					<label>Endereço</label>
-					<input id="endereco" />
+					<input id="endereco" required />
 				</div>
 				<div class="grid-2">
 					<div class="campo">
 						<label>Cidade</label>
-						<input id="cidade" />
+						<input id="cidade" required />
 					</div>
 					<div class="campo">
 						<label>Estado</label>
-						<input id="estado" />
+						<input id="estado" required />
 					</div>
 				</div>
 				<div class="grid-2">
 					<div class="campo">
 						<label>E-mail</label>
-						<input id="email" />
+						<input id="email" type="email" required />
 					</div>
 					<div class="campo">
 						<label>Telefone</label>
-						<input id="telefone" />
+						<input id="telefone" inputmode="numeric" maxlength="15" required />
 					</div>
 				</div>
 				<div class="campo full">
 					<label>Cronograma</label>
-					<select id="cronograma">
+					<select id="cronograma" required>
 						<option value="">Selecione</option>
 					</select>
 				</div>
@@ -102,11 +103,14 @@
 						<button class="btn-cancelar" onclick="voltar()">Cancelar</button>
 					</div>
 					<div class="right-buttons">
-						<button class="btn-delete" onclick="excluir()">Excluir</button>
+						<button class="btn-delete" onclick="excluir()">Desativar</button>
 					</div>
 				</div>
 			</div>
 		</div>
+		<script src="../js/config.js"></script>
+		<script src="../js/notificacoes.js"></script>
+		<script src="../js/validacaoVoluntario.js"></script>
 		<script src="../js/voluntarioEditar.js"></script>
 	</body>
 </html>

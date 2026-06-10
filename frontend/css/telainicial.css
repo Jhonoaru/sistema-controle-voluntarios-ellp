@@ -35,6 +35,24 @@ body {
 	font-size: 14px;
 }
 
+.topbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.topbar-actions button {
+	padding: 8px 12px;
+	border: 1px solid #aebdcd;
+	border-radius: 6px;
+	background: white;
+	cursor: pointer;
+}
+
+.topbar-actions button:hover {
+	background: #f1f5f9;
+}
+
 /* ================= CONTAINER ================= */
 
 .container {

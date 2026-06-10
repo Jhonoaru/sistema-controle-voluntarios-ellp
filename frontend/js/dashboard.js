@@ -1,6 +1,4 @@
-if (!localStorage.getItem('logado')) {
-  window.location.href = 'login.html';
-}
+exigirAutenticacao();
 
 let voluntarios = [];
 let filtroAtual = 'ativo';
@@ -13,11 +11,16 @@ if (nome) {
 
 async function carregarVoluntarios() {
   try {
-    const res = await fetch('http://localhost:3001/voluntarios');
+    const res = await apiFetch('/voluntarios');
+    if (!res.ok) {
+      throw new Error('Erro ao carregar voluntarios');
+    }
+
     voluntarios = await res.json();
     renderizar();
   } catch (error) {
-    console.error('Erro ao carregar voluntários:', error);
+    console.error('Erro ao carregar voluntarios:', error);
+    mostrarNotificacao('Erro ao carregar voluntarios.', 'erro');
   }
 }
 
@@ -46,15 +49,18 @@ function renderizar() {
     .forEach(v => {
       const div = document.createElement('div');
       div.className = 'vol-card';
+      const nomeVoluntario = escaparHtml(v.nome || '');
+      const emailVoluntario = escaparHtml(v.email || '');
+      const raVoluntario = escaparHtml(v.ra || '-');
 
       div.innerHTML = `
         <div class="vol-info">
           <div class="status ${v.ativo ? 'ativo' : 'inativo'}">
             ${v.ativo ? 'Ativo' : 'Inativo'}
           </div>
-          <strong>${v.nome}</strong>
-          <span>${v.email}</span>
-          <small>RA: ${v.ra || '—'}</small>
+          <strong>${nomeVoluntario}</strong>
+          <span>${emailVoluntario}</span>
+          <small>RA: ${raVoluntario}</small>
         </div>
 
         <div class="actions">
@@ -91,21 +97,67 @@ function irCoordenador() {
   window.location.href = 'coordenador.html';
 }
 
+function irMinhaConta() {
+  const usuarioId = localStorage.getItem('usuarioId');
+
+  if (!usuarioId) {
+    logout();
+    return;
+  }
+
+  window.location.href = `coordenador.html?id=${usuarioId}`;
+}
+
 function editar(id) {
   window.location.href = `voluntariosEditar.html?id=${id}`;
 }
 
-function baixarTermo(id) {
-  const link = document.createElement('a');
-  link.href = `http://localhost:3001/api/termo/${id}`;
-  link.download = '';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+async function baixarTermo(id) {
+  try {
+    mostrarNotificacao('Gerando termo em PDF...', 'info', 2500);
+
+    const res = await apiFetch(`/api/termo/${id}`);
+    if (!res.ok) {
+      throw new Error('Erro ao gerar termo');
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = obterNomeArquivoTermo(res.headers.get('Content-Disposition'), id);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    mostrarNotificacao('Termo baixado com sucesso.', 'sucesso');
+  } catch (error) {
+    console.error('Erro ao baixar termo:', error);
+    mostrarNotificacao('Nao foi possivel baixar o termo.', 'erro');
+  }
+}
+
+function obterNomeArquivoTermo(contentDisposition, id) {
+  const match = contentDisposition && contentDisposition.match(/filename="?([^"]+)"?/);
+  return match ? match[1] : `termo_voluntario_${id}.pdf`;
+}
+
+function escaparHtml(valor) {
+  return String(valor)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 function logout() {
-  localStorage.clear();
+  localStorage.removeItem('token');
+  localStorage.removeItem('usuarioId');
+  localStorage.removeItem('usuarioNome');
+  localStorage.removeItem('logado');
   window.location.href = 'login.html';
 }
 
