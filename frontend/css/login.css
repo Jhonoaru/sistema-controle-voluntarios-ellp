@@ -70,34 +70,6 @@ body {
 
 /* ================= OPTIONS ================= */
 
-.options {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
-	font-size: 13px;
-
-	flex-wrap: nowrap;
-}
-
-.options label {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	white-space: nowrap;
-}
-
-.options input[type="checkbox"] {
-	margin: 0;
-}
-
-/* LINK */
-.options a {
-	text-decoration: none;
-	color: #3b82f6;
-	white-space: nowrap;
-}
-
 /* ================= BOTÃO ================= */
 
 .form button {
@@ -116,16 +88,6 @@ body {
 }
 
 /* CADASTRO */
-.cadastro {
-	margin-top: 15px;
-	font-size: 13px;
-}
-
-.cadastro a {
-	color: #3b82f6;
-	text-decoration: none;
-}
-
 /* ERRO */
 #erro {
 	margin-top: 10px;
@@ -148,4 +110,28 @@ body {
 .right img {
 	width: 85%;
 	max-width: 650px;
+}
+
+@media (max-width: 800px) {
+	.container {
+		min-height: 100vh;
+		height: auto;
+	}
+
+	.left {
+		width: 100%;
+		padding: 24px;
+	}
+
+	.right {
+		display: none;
+	}
+
+	.logo {
+		width: 190px;
+	}
+
+	.form {
+		padding: 24px;
+	}
 }

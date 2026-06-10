@@ -1,6 +1,4 @@
-if (!localStorage.getItem('logado')) {
-  window.location.href = 'login.html';
-}
+exigirAutenticacao();
 
 let voluntarios = [];
 let filtroAtual = 'ativo';
@@ -13,7 +11,7 @@ if (nome) {
 
 async function carregarVoluntarios() {
   try {
-    const res = await fetch('http://localhost:3001/voluntarios');
+    const res = await apiFetch('/voluntarios');
     if (!res.ok) {
       throw new Error('Erro ao carregar voluntarios');
     }
@@ -99,6 +97,17 @@ function irCoordenador() {
   window.location.href = 'coordenador.html';
 }
 
+function irMinhaConta() {
+  const usuarioId = localStorage.getItem('usuarioId');
+
+  if (!usuarioId) {
+    logout();
+    return;
+  }
+
+  window.location.href = `coordenador.html?id=${usuarioId}`;
+}
+
 function editar(id) {
   window.location.href = `voluntariosEditar.html?id=${id}`;
 }
@@ -107,7 +116,7 @@ async function baixarTermo(id) {
   try {
     mostrarNotificacao('Gerando termo em PDF...', 'info', 2500);
 
-    const res = await fetch(`http://localhost:3001/api/termo/${id}`);
+    const res = await apiFetch(`/api/termo/${id}`);
     if (!res.ok) {
       throw new Error('Erro ao gerar termo');
     }
@@ -145,7 +154,10 @@ function escaparHtml(valor) {
 }
 
 function logout() {
-  localStorage.clear();
+  localStorage.removeItem('token');
+  localStorage.removeItem('usuarioId');
+  localStorage.removeItem('usuarioNome');
+  localStorage.removeItem('logado');
   window.location.href = 'login.html';
 }
 

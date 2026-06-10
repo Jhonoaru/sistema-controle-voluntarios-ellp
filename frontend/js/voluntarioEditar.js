@@ -1,4 +1,5 @@
 let voluntarioId = null;
+exigirAutenticacao();
 
 function getId() {
   const params = new URLSearchParams(window.location.search);
@@ -9,7 +10,7 @@ async function carregarVoluntario() {
   try {
     voluntarioId = getId();
 
-    const res = await fetch('http://localhost:3001/voluntarios');
+    const res = await apiFetch('/voluntarios');
     if (!res.ok) {
       throw new Error('Erro ao carregar voluntario');
     }
@@ -63,7 +64,7 @@ async function salvar() {
   delete dados.ativoSelecionado;
 
   try {
-    const res = await fetch(`http://localhost:3001/voluntarios/${voluntarioId}`, {
+    const res = await apiFetch(`/voluntarios/${voluntarioId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dados)
@@ -84,7 +85,7 @@ async function salvar() {
 
 async function carregarCronogramas(selectedId = null) {
   try {
-    const res = await fetch('http://localhost:3001/cronogramas');
+    const res = await apiFetch('/cronogramas');
     if (!res.ok) {
       throw new Error('Erro ao carregar cronogramas');
     }
@@ -115,22 +116,22 @@ function voltar() {
 }
 
 async function excluir() {
-  if (!confirm('Tem certeza que deseja excluir este voluntario?')) return;
+  if (!confirm('Tem certeza que deseja desativar este voluntario?')) return;
 
   try {
-    const res = await fetch(`http://localhost:3001/voluntarios/${voluntarioId}`, {
+    const res = await apiFetch(`/voluntarios/${voluntarioId}`, {
       method: 'DELETE'
     });
 
     if (!res.ok) {
-      throw new Error('Erro ao excluir voluntario');
+      throw new Error('Erro ao desativar voluntario');
     }
 
-    salvarNotificacaoPendente('Voluntario excluido com sucesso.', 'sucesso');
+    salvarNotificacaoPendente('Voluntario desativado com sucesso.', 'sucesso');
     window.location.href = 'dashboard.html';
   } catch (error) {
-    console.error('Erro ao excluir voluntario:', error);
-    mostrarNotificacao('Nao foi possivel excluir o voluntario.', 'erro');
+    console.error('Erro ao desativar voluntario:', error);
+    mostrarNotificacao('Nao foi possivel desativar o voluntario.', 'erro');
   }
 }
 

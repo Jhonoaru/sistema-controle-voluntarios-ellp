@@ -1,10 +1,12 @@
+exigirAutenticacao();
+
 async function cadastrar() {
   const dados = obterDadosVoluntario();
 
   if (!validarVoluntario(dados)) return;
 
   try {
-    const res = await fetch('http://localhost:3001/voluntarios', {
+    const res = await apiFetch('/voluntarios', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dados)
@@ -25,7 +27,7 @@ async function cadastrar() {
 
 async function carregarCronogramas() {
   try {
-    const res = await fetch('http://localhost:3001/cronogramas');
+    const res = await apiFetch('/cronogramas');
     if (!res.ok) {
       throw new Error('Erro ao carregar cronogramas');
     }

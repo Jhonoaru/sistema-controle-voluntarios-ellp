@@ -1,5 +1,7 @@
-async function login() {
-  const login = document.getElementById('email').value.trim();
+async function login(event) {
+  event.preventDefault();
+
+  const login = document.getElementById('login').value.trim();
   const senha = document.getElementById('senha').value;
 
   if (!login || !senha) {
@@ -8,7 +10,7 @@ async function login() {
   }
 
   try {
-    const res = await fetch('http://localhost:3001/auth/login', {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -19,7 +21,8 @@ async function login() {
     const data = await res.json();
 
     if (data.success) {
-      localStorage.setItem('logado', 'true');
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('usuarioId', data.user.id);
       localStorage.setItem('usuarioNome', data.user.nome);
       salvarNotificacaoPendente('Login realizado com sucesso.', 'sucesso');
 
@@ -37,3 +40,5 @@ function mostrarErroLogin(mensagem) {
   document.getElementById('erro').innerText = mensagem;
   mostrarNotificacao(mensagem, 'erro');
 }
+
+document.getElementById('loginForm').addEventListener('submit', login);

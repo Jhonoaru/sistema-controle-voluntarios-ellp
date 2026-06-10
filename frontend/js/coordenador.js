@@ -1,8 +1,6 @@
-if (!localStorage.getItem('logado')) {
-  window.location.href = 'login.html';
-}
+exigirAutenticacao();
 
-const API_URL = 'http://localhost:3001/coordenadores';
+const COORDENADORES_URL = '/coordenadores';
 
 const urlParams = new URLSearchParams(window.location.search);
 const coordenadorId = urlParams.get('id');
@@ -20,7 +18,7 @@ window.onload = async () => {
 
 async function carregarCoordenador() {
   try {
-    const res = await fetch(`${API_URL}/${coordenadorId}`);
+    const res = await apiFetch(`${COORDENADORES_URL}/${coordenadorId}`);
 
     if (!res.ok) {
       throw new Error('Erro ao carregar coordenador');
@@ -30,7 +28,7 @@ async function carregarCoordenador() {
 
     document.getElementById('nome').value = c.nome || '';
     document.getElementById('login').value = c.login || '';
-    document.getElementById('senha').value = c.senha || '';
+    document.getElementById('senha').value = '';
   } catch (error) {
     console.error('Erro ao carregar coordenador:', error);
     mostrarNotificacao('Erro ao carregar coordenador.', 'erro');
@@ -44,8 +42,8 @@ async function salvarCoordenador(e) {
   const login = document.getElementById('login').value.trim();
   const senha = document.getElementById('senha').value.trim();
 
-  if (!nome || !login || !senha) {
-    mostrarNotificacao('Preencha todos os campos.', 'erro');
+  if (!nome || !login || (!coordenadorId && !senha)) {
+    mostrarNotificacao('Preencha os campos obrigatorios.', 'erro');
     return;
   }
 
@@ -57,9 +55,9 @@ async function salvarCoordenador(e) {
 
   try {
     const metodo = coordenadorId ? 'PUT' : 'POST';
-    const url = coordenadorId ? `${API_URL}/${coordenadorId}` : API_URL;
+    const url = coordenadorId ? `${COORDENADORES_URL}/${coordenadorId}` : COORDENADORES_URL;
 
-    const res = await fetch(url, {
+    const res = await apiFetch(url, {
       method: metodo,
       headers: {
         'Content-Type': 'application/json'
