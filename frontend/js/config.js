@@ -3,6 +3,19 @@ const API_URL = 'http://localhost:3001';
 function exigirAutenticacao() {
   if (!localStorage.getItem('token')) {
     window.location.href = 'login.html';
+    return false;
+  }
+
+  exibirUsuarioLogado();
+  return true;
+}
+
+function exibirUsuarioLogado() {
+  const elementoUsuario = document.querySelector('.user');
+  const nomeUsuario = localStorage.getItem('usuarioNome');
+
+  if (elementoUsuario && nomeUsuario) {
+    elementoUsuario.innerText = nomeUsuario;
   }
 }
 

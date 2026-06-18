@@ -6,7 +6,7 @@ let filtroAtual = 'ativo';
 const nome = localStorage.getItem('usuarioNome');
 
 if (nome) {
-  document.querySelector('.user').innerText = nome;
+  exibirUsuarioLogado();
 }
 
 async function carregarVoluntarios() {
